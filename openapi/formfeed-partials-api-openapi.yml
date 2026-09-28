@@ -1,0 +1,346 @@
+openapi: 3.2.0
+info:
+  title: Formfeed Partials API
+  version: 1.0.0
+  contact:
+    name: Formfeed support
+    email: support@formfeed.dev
+    url: https://formfeed.dev
+  termsOfService: https://formfeed.dev/legal/terms
+  description: 'Operations tagged Partials across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api-eu.formfeed.dev/v1
+  description: EU (Frankfurt), where every workspace renders and stores today
+- url: https://api.formfeed.dev/v1
+  description: Routes to the workspace's region
+- url: https://api-us.formfeed.dev/v1
+  description: Reserved for a US region, which is not open yet
+security:
+- bearerAuth: []
+tags:
+- name: Partials
+  description: Shared partials of the organisation, included by name from every template of the same engine.
+paths:
+  /partials:
+    get:
+      tags:
+      - Partials
+      operationId: listPartials
+      summary: List shared partials
+      description: 'The organisation''s shared partials, without their source. A template includes one by name with
+
+        its engine''s syntax (`{% include "letterhead" %}` in Jinja2 and Liquid, `{{> letterhead}}`);
+
+        a partial of the template version with the same name wins. Renders always
+
+        use the current source. Needs `template:read`.'
+      responses:
+        '200':
+          description: Shared partials, by name.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Partial'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /partials/{name}:
+    parameters:
+    - name: name
+      in: path
+      required: true
+      description: The partial's name.
+      schema:
+        type: string
+        pattern: ^[a-z0-9](?:[a-z0-9_-]{0,62}[a-z0-9])?$
+        example: letterhead
+    get:
+      tags:
+      - Partials
+      operationId: getPartial
+      summary: Get a shared partial
+      description: One shared partial with its source. Needs `template:read`.
+      responses:
+        '200':
+          description: Partial with source.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partial'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      tags:
+      - Partials
+      operationId: putPartial
+      summary: Create or update a shared partial
+      description: 'Creates the partial (201) or replaces its source, engine and description (200). Every template
+
+        that includes it renders with the new source from the next render on, without a new template
+
+        version. Send the `version` you last read as `base_version` to refuse the write with 409
+
+        `conflict` when someone changed the partial in between; `formfeed partials push` does. The name
+
+        is stored in lowercase; one that does not match the pattern is refused with 400. Sources up to
+
+        256 KB; an organisation holds at most 200 shared partials, and creating one more is refused
+
+        with 400 `invalid_request` (`feature: "partials"`). Needs `template:write`.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartialPut'
+      responses:
+        '200':
+          description: Updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partial'
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partial'
+        '400':
+          description: 'Invalid name or body, or the organisation already holds 200 shared partials (`feature: "partials"`).'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: '`conflict`: `base_version` is not the current version. The problem carries the stored partial as `current` (`null` when it was deleted).'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags:
+      - Partials
+      operationId: deletePartial
+      summary: Delete a shared partial
+      description: 'Removes the partial. Templates that still include it fail to render with a template error
+
+        until the include is removed or a partial of that name exists again. Needs `template:write`.'
+      responses:
+        '204':
+          description: Deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+components:
+  schemas:
+    PartialPut:
+      type: object
+      required:
+      - engine
+      - source
+      properties:
+        engine:
+          $ref: '#/components/schemas/Engine'
+        source:
+          type: string
+          maxLength: 262144
+        description:
+          type:
+          - string
+          - 'null'
+          maxLength: 300
+        base_version:
+          type: integer
+          minimum: 1
+          description: The version this change is based on; conflict (409) if the partial has a different version. Leave out to write unconditionally.
+    Partial:
+      type: object
+      required:
+      - name
+      - engine
+      - version
+      - created_at
+      - updated_at
+      properties:
+        name:
+          type: string
+          example: letterhead
+        engine:
+          $ref: '#/components/schemas/Engine'
+        description:
+          type:
+          - string
+          - 'null'
+        version:
+          type: integer
+          example: 3
+          description: Grows when the source or the engine changes.
+        source:
+          type: string
+          description: Only in `GET /partials/{name}` and `PUT` responses.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    Engine:
+      type: string
+      enum:
+      - jinja2
+      - liquid
+      - handlebars
+  responses:
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: 'API key from the workspace: `ff_live_…` or `ff_test_…`. Also accepted in the `X-API-Key` header.'
+externalDocs:
+  description: Guides, SDKs and the CLI
+  url: https://docs.formfeed.dev
+x-refined-from:
+- api_formfeed.json
+- formfeed-openapi.json

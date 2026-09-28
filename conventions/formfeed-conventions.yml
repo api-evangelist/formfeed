@@ -1,0 +1,28 @@
+generated: '2026-09-28'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://docs.formfeed.dev/api/overview
+sources:
+- https://docs.formfeed.dev/api/overview
+- https://docs.formfeed.dev/getting-started/quickstart
+- https://docs.formfeed.dev/getting-started/templates-as-code
+- https://docs.formfeed.dev/getting-started/concepts
+idempotency:
+  coverage: full
+  header: Idempotency-Key
+  retention: 24 hours per workspace
+  evidence: Send an Idempotency-Key header with every POST, and retry with the same key when you do not know whether the first attempt arrived.
+    The first response to a key is stored for 24 hours per workspace.
+pagination:
+  style: cursor-based
+  params:
+  - cursor
+  - limit
+  response_fields:
+  - data
+  - next_cursor
+versioning: The API version is in the path (/v1). Within a version, changes are additive; breaking changes ship only as a new version.
+error_envelope: application/problem+json (RFC 9457)
+authentication: Bearer token via Authorization header or X-API-Key header
+request_tracing: X-Request-Id header in every response; problem responses include request_id
+docs: https://docs.formfeed.dev/api/overview

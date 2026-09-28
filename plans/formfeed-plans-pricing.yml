@@ -1,0 +1,25 @@
+generated: '2026-09-28'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://formfeed.dev/pricing
+sources:
+- https://formfeed.dev/pricing
+- https://docs.formfeed.dev/api/limits-and-usage
+name: Formfeed pricing
+audience: business-product
+pricing_basis: per-seat
+plans:
+- name: Free
+  price_text: Free
+- name: Starter
+  price_text: 19 € per month or 180 € per year
+  price: 19
+- name: Pro
+  price_text: 59 € per month or 588 € per year
+  price: 59
+- name: Business
+  price_text: 179 € per month or 1,788 € per year
+  price: 179
+- name: Enterprise
+  price_text: Custom
+docs: https://formfeed.dev/pricing

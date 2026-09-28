@@ -1,0 +1,51 @@
+generated: '2026-09-28'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://docs.formfeed.dev/errors/rate-limited
+sources:
+- https://docs.formfeed.dev/errors/rate-limited
+- https://docs.formfeed.dev/api/limits-and-usage
+- https://docs.formfeed.dev/errors/quota-exceeded
+name: Formfeed rate limits
+limits:
+- name: Free plan workspace limit
+  limit_text: Rate limit of 5 requests per second exceeded
+  max: 5
+  window: second
+  plan: Free
+  endpoint: POST /renders, POST /renders/batch, compatibility endpoints
+  burst: size equals requests per second (1 for Free plan) allowing short bursts up to that size
+- name: Starter plan workspace limit
+  limit_text: Rate limit of 5 requests per second exceeded
+  max: 5
+  window: second
+  plan: Starter
+  endpoint: POST /renders, POST /renders/batch, compatibility endpoints
+  burst: size equals requests per second (5 for Starter plan) allowing short bursts up to that size
+- name: Pro plan workspace limit
+  limit_text: Rate limit of 5 requests per second exceeded
+  max: 5
+  window: second
+  plan: Pro
+  endpoint: POST /renders, POST /renders/batch, compatibility endpoints
+  burst: size equals requests per second (15 for Pro plan) allowing short bursts up to that size
+- name: Business plan workspace limit
+  limit_text: Rate limit of 5 requests per second exceeded
+  max: 5
+  window: second
+  plan: Business
+  endpoint: POST /renders, POST /renders/batch, compatibility endpoints
+  burst: size equals requests per second (40 for Business plan) allowing short bursts up to that size
+- name: Free plan test key limit
+  limit_text: 30 requests per minute
+  max: 30
+  window: minute
+  plan: Free (test key)
+  endpoint: All request types
+headers:
+- RateLimit-Limit
+- RateLimit-Remaining
+- RateLimit-Reset
+- Retry-After
+exhaustion_status: 429
+docs: https://docs.formfeed.dev/errors/rate-limited

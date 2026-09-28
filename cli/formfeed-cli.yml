@@ -1,0 +1,92 @@
+generated: '2026-09-28'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://docs.formfeed.dev/api/sdks/typescript
+sources:
+- https://docs.formfeed.dev/api/sdks/typescript
+- https://docs.formfeed.dev/api/sdks/python
+- https://docs.formfeed.dev/api/pdf-tools
+- https://docs.formfeed.dev/cli
+install:
+- method: npx
+  command: npx formfeed --help
+commands:
+- group: login
+  commands:
+  - login
+  - logout
+  - whoami
+- group: config
+  commands:
+  - config list
+  - config get
+  - config set
+- group: workspaces
+  commands:
+  - workspaces delete
+- group: templates
+  commands:
+  - init
+  - templates list
+  - templates pull
+  - templates diff
+  - templates push
+- group: dev
+  commands:
+  - dev
+- group: validate
+  commands:
+  - validate
+- group: test
+  commands:
+  - test
+- group: render
+  commands:
+  - render
+- group: pdf
+  commands:
+  - pdf convert
+- group: brand
+  commands:
+  - brand pull
+- group: partials
+  commands:
+  - partials list
+  - partials pull
+  - partials push
+- group: files
+  commands:
+  - files list
+  - files push
+  - files pull
+  - files delete
+- group: renders
+  commands:
+  - renders list
+  - renders get
+  - renders delete-outputs
+- group: reproductions
+  commands:
+  - reproductions pull
+- group: webhooks
+  commands:
+  - listen
+  - webhooks resend
+  - trigger
+- group: ci
+  commands:
+  - ci preview
+- group: channels
+  commands:
+  - channels list
+  - channels set
+  - channels promote
+  - channels rollback
+  - channels delete
+- group: import
+  commands:
+  - import apitemplate
+  - import pdfmonkey
+  - import jsreport
+binary: formfeed
+docs: https://docs.formfeed.dev/api/sdks/typescript

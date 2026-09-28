@@ -1,0 +1,433 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/formfeed/main/json-schema/formfeed-render-request-schema.json",
+  "title": "RenderRequest",
+  "x-generated": "2026-09-28",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/formfeed-openapi.json#/components/schemas/RenderRequest",
+  "type": "object",
+  "properties": {
+    "template": {
+      "type": "string",
+      "description": "Template id or slug. Omit when using `html` or `url`."
+    },
+    "version": {
+      "type": "string",
+      "description": "`published` (default), the name of a release channel such as `staging`, `latest` (the draft the editor works on, test keys only) or a version number. Channels, `published` included, are cached for up to a minute; a channel with a canary sends its share of renders to the canary version, chosen by the Idempotency-Key so a retry lands on the same version. A draft renders as it is at that moment.",
+      "default": "published"
+    },
+    "html": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Ad-hoc HTML, max 5 MB."
+    },
+    "url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "description": "Public URL to render."
+    },
+    "engine": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Engine"
+        }
+      ],
+      "nullable": true,
+      "description": "Engine for `html` sources; `null` disables templating."
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Data bound to the template."
+    },
+    "output": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/OutputFormat"
+        }
+      ],
+      "description": "Left out, the template decides: `pdf` for a template of kind `pdf`, `settings.image.format` (the request's, then the template's; `png` without one) for kind `image`, `settings.office.output` (else the template's own format) for kinds `docx` and `pptx`. Ad-hoc `html` and `url` render `pdf`. On the Free plan, test renders of `docx` and `pptx` templates may only request `pdf` (403 `test_output_unavailable`)."
+    },
+    "settings": {
+      "$ref": "#/$defs/Settings"
+    },
+    "filename": {
+      "type": "string",
+      "description": "May contain template expressions."
+    },
+    "expires_in": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Seconds until the output expires. `null` uses the workspace retention."
+    },
+    "access": {
+      "type": "string",
+      "enum": [
+        "public",
+        "signed"
+      ],
+      "default": "signed"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "sync",
+        "async"
+      ],
+      "default": "sync"
+    },
+    "locale": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Overrides the template locale and selects the i18n dictionary."
+    },
+    "webhook_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "webhook_secret": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 16,
+      "maxLength": 200,
+      "description": "Signs the deliveries to `webhook_url` (same scheme as an endpoint secret). Write-only, never returned; without it those deliveries stay unsigned."
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Echoed in the response and webhooks."
+    },
+    "region": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Region"
+        }
+      ],
+      "nullable": true
+    },
+    "dedupe": {
+      "type": "boolean",
+      "default": true,
+      "description": "Serve identical requests from the dedup cache at zero units."
+    },
+    "canary_key": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Decides the canary split of a channel: renders with the same value land on the same version, so one customer's documents look alike. Use an opaque id; it is not stored. Without it the Idempotency-Key decides, which keeps a retry on its version but splits separate renders independently."
+    },
+    "validate_data": {
+      "type": "boolean",
+      "default": false,
+      "description": "Checks `data` against the template's stored data schema before anything is rendered or counted; a mismatch answers 422 `data_validation_error` listing every error. Needs a template with a stored schema (400 otherwise). In a batch, nothing is queued unless every item that asks for it fits."
+    },
+    "post": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Post-processing of a PDF render, applied in the order merge, watermark, password (0.5 units\nper step on live keys; Starter plan and above). An unknown step is refused, never skipped.\n",
+      "additionalProperties": false,
+      "properties": {
+        "merge_after": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 49,
+          "items": {
+            "type": "string"
+          },
+          "description": "PDFs appended after this document, in order: render ids (`rnd_…`) of earlier renders, file ids (`fil_…`) or names of PDFs in the workspace library."
+        },
+        "watermark": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Either a text or an image from the workspace library, not both.",
+          "properties": {
+            "text": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "image": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "A library file: its id (`fil_…`) or its name. PNG or JPEG."
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.2
+            },
+            "rotation": {
+              "type": "number",
+              "default": -45,
+              "description": "Degrees clockwise as in CSS."
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#?[0-9a-fA-F]{6}$",
+              "description": "Hex colour of the text; ignored for an image."
+            }
+          }
+        },
+        "password": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "user": {
+              "type": "string",
+              "maxLength": 127,
+              "description": "Needed to open the document."
+            },
+            "owner": {
+              "type": "string",
+              "maxLength": 127,
+              "description": "Lifts the restrictions; random when omitted."
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "print",
+                  "copy",
+                  "modify",
+                  "annotate"
+                ]
+              },
+              "default": []
+            }
+          }
+        }
+      }
+    },
+    "storage": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/StorageOption"
+        }
+      ],
+      "nullable": true
+    }
+  },
+  "$defs": {
+    "Engine": {
+      "type": "string",
+      "enum": [
+        "jinja2",
+        "liquid",
+        "handlebars"
+      ]
+    },
+    "OutputFormat": {
+      "type": "string",
+      "enum": [
+        "pdf",
+        "png",
+        "jpg",
+        "webp",
+        "docx",
+        "pptx"
+      ],
+      "description": "PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`."
+    },
+    "Region": {
+      "type": "string",
+      "enum": [
+        "eu",
+        "us",
+        "apac"
+      ]
+    },
+    "Settings": {
+      "type": "object",
+      "description": "Rendering settings. Deep-merged over the template's settings. See the settings reference.",
+      "additionalProperties": true,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "type": "string"
+            },
+            "width": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "height": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "landscape": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "margin": {
+          "type": "object",
+          "properties": {
+            "top": {
+              "type": "string"
+            },
+            "right": {
+              "type": "string"
+            },
+            "bottom": {
+              "type": "string"
+            },
+            "left": {
+              "type": "string"
+            }
+          }
+        },
+        "header": {
+          "type": "object",
+          "description": "Printed across the whole page width inside the top margin.",
+          "properties": {
+            "html": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string"
+            },
+            "padding": {
+              "type": "string",
+              "description": "CSS padding inside the header box; `0` for designs that run edge to edge.",
+              "default": "0 10mm"
+            }
+          }
+        },
+        "footer": {
+          "type": "object",
+          "description": "Printed across the whole page width inside the bottom margin.",
+          "properties": {
+            "html": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string"
+            },
+            "padding": {
+              "type": "string",
+              "description": "CSS padding inside the footer box; `0` for designs that run edge to edge.",
+              "default": "0 10mm"
+            }
+          }
+        },
+        "printBackground": {
+          "type": "boolean",
+          "default": true
+        },
+        "scale": {
+          "type": "number",
+          "default": 1
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            },
+            "deviceScaleFactor": {
+              "type": "number",
+              "default": 2
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "png",
+                "jpeg",
+                "webp"
+              ],
+              "description": "Output of an image template when the request names no `output`. `jpg` is accepted as well."
+            },
+            "quality": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "fullPage": {
+              "type": "boolean",
+              "default": false
+            },
+            "transparent": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "office": {
+          "type": "object",
+          "description": "Word and PowerPoint templates. Page setup, margins, headers and footers come from the document; the Chromium settings above do not apply.",
+          "properties": {
+            "output": {
+              "type": "string",
+              "enum": [
+                "docx",
+                "pptx",
+                "pdf"
+              ],
+              "description": "Output when the request names none; the template's own format without it."
+            }
+          }
+        },
+        "locale": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    },
+    "StorageOption": {
+      "description": "The copy for the workspace's own bucket (bring your own storage). Left out, every output is\ncopied under the connection's key template. `false` leaves this document out. `key` names its\nobject below the connection's prefix instead of the key template: relative, without `.` or `..`\nsegments, at most 1024 bytes; an existing object is overwritten. A render with its own key is\nnever answered from the dedup cache, and one without a connection answers 409\n`storage_not_configured`. In a batch, each item carries its own.\n",
+      "oneOf": [
+        {
+          "type": "boolean",
+          "enum": [
+            false
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "type": "string",
+              "maxLength": 1024
+            }
+          }
+        }
+      ]
+    }
+  }
+}

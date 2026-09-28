@@ -1,0 +1,574 @@
+{
+  "@context": {
+    "@vocab": "https://formfeed.dev/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "formfeed": "https://formfeed.dev/schema#",
+    "Engine": "formfeed:Engine",
+    "TemplateKind": "formfeed:TemplateKind",
+    "Region": "formfeed:Region",
+    "RenderStatus": "formfeed:RenderStatus",
+    "OutputFormat": "formfeed:OutputFormat",
+    "Problem": "formfeed:Problem",
+    "type": {
+      "@id": "formfeed:type",
+      "@type": "@id"
+    },
+    "title": {
+      "@id": "formfeed:title",
+      "@type": "xsd:string"
+    },
+    "status": {
+      "@id": "formfeed:status",
+      "@type": "xsd:integer"
+    },
+    "detail": {
+      "@id": "formfeed:detail",
+      "@type": "xsd:string"
+    },
+    "code": {
+      "@id": "formfeed:code",
+      "@type": "xsd:string"
+    },
+    "location": {
+      "@id": "formfeed:location"
+    },
+    "request_id": {
+      "@id": "formfeed:request_id",
+      "@type": "xsd:string"
+    },
+    "errors": {
+      "@id": "formfeed:errors",
+      "@container": "@list"
+    },
+    "index": {
+      "@id": "formfeed:index",
+      "@type": "xsd:integer"
+    },
+    "Diagnostic": "formfeed:Diagnostic",
+    "severity": {
+      "@id": "formfeed:severity",
+      "@type": "xsd:string"
+    },
+    "message": {
+      "@id": "formfeed:message",
+      "@type": "xsd:string"
+    },
+    "path": {
+      "@id": "formfeed:path",
+      "@type": "xsd:string"
+    },
+    "part": {
+      "@id": "formfeed:part",
+      "@type": "xsd:string"
+    },
+    "paragraph": {
+      "@id": "formfeed:paragraph",
+      "@type": "xsd:integer"
+    },
+    "Settings": "formfeed:Settings",
+    "paper": {
+      "@id": "formfeed:paper"
+    },
+    "margin": {
+      "@id": "formfeed:margin"
+    },
+    "header": {
+      "@id": "formfeed:header"
+    },
+    "footer": {
+      "@id": "formfeed:footer"
+    },
+    "printBackground": {
+      "@id": "formfeed:printBackground",
+      "@type": "xsd:boolean"
+    },
+    "scale": {
+      "@id": "formfeed:scale",
+      "@type": "xsd:decimal"
+    },
+    "image": {
+      "@id": "formfeed:image"
+    },
+    "office": {
+      "@id": "formfeed:office"
+    },
+    "locale": {
+      "@id": "formfeed:locale",
+      "@type": "xsd:string"
+    },
+    "timezone": {
+      "@id": "formfeed:timezone",
+      "@type": "xsd:string"
+    },
+    "currency": {
+      "@id": "formfeed:currency",
+      "@type": "xsd:string"
+    },
+    "RenderRequest": "formfeed:RenderRequest",
+    "template": {
+      "@id": "formfeed:template",
+      "@type": "xsd:string"
+    },
+    "version": {
+      "@id": "formfeed:version",
+      "@type": "xsd:string"
+    },
+    "html": {
+      "@id": "formfeed:html",
+      "@type": "xsd:string"
+    },
+    "url": {
+      "@id": "formfeed:url",
+      "@type": "@id"
+    },
+    "engine": {
+      "@id": "formfeed:engine"
+    },
+    "data": {
+      "@id": "formfeed:data"
+    },
+    "output": {
+      "@id": "formfeed:output"
+    },
+    "settings": {
+      "@id": "formfeed:settings",
+      "@type": "@id"
+    },
+    "filename": {
+      "@id": "formfeed:filename",
+      "@type": "xsd:string"
+    },
+    "expires_in": {
+      "@id": "formfeed:expires_in",
+      "@type": "xsd:integer"
+    },
+    "access": {
+      "@id": "formfeed:access",
+      "@type": "xsd:string"
+    },
+    "mode": {
+      "@id": "formfeed:mode",
+      "@type": "xsd:string"
+    },
+    "webhook_url": {
+      "@id": "formfeed:webhook_url",
+      "@type": "@id"
+    },
+    "webhook_secret": {
+      "@id": "formfeed:webhook_secret",
+      "@type": "xsd:string"
+    },
+    "meta": {
+      "@id": "formfeed:meta"
+    },
+    "region": {
+      "@id": "formfeed:region"
+    },
+    "dedupe": {
+      "@id": "formfeed:dedupe",
+      "@type": "xsd:boolean"
+    },
+    "canary_key": {
+      "@id": "formfeed:canary_key",
+      "@type": "xsd:string"
+    },
+    "validate_data": {
+      "@id": "formfeed:validate_data",
+      "@type": "xsd:boolean"
+    },
+    "post": {
+      "@id": "formfeed:post"
+    },
+    "storage": {
+      "@id": "formfeed:storage"
+    },
+    "Render": "formfeed:Render",
+    "id": {
+      "@id": "formfeed:id",
+      "@type": "xsd:string"
+    },
+    "download_url": {
+      "@id": "formfeed:download_url",
+      "@type": "@id"
+    },
+    "expires_at": {
+      "@id": "formfeed:expires_at",
+      "@type": "xsd:dateTime"
+    },
+    "bytes": {
+      "@id": "formfeed:bytes",
+      "@type": "xsd:integer"
+    },
+    "page_count": {
+      "@id": "formfeed:page_count",
+      "@type": "xsd:integer"
+    },
+    "units": {
+      "@id": "formfeed:units",
+      "@type": "xsd:decimal"
+    },
+    "environment": {
+      "@id": "formfeed:environment",
+      "@type": "xsd:string"
+    },
+    "engine_version": {
+      "@id": "formfeed:engine_version",
+      "@type": "xsd:string"
+    },
+    "template_checksum": {
+      "@id": "formfeed:template_checksum",
+      "@type": "xsd:string"
+    },
+    "output_sha256": {
+      "@id": "formfeed:output_sha256",
+      "@type": "xsd:string"
+    },
+    "deduplicated": {
+      "@id": "formfeed:deduplicated",
+      "@type": "xsd:boolean"
+    },
+    "timings": {
+      "@id": "formfeed:timings"
+    },
+    "error": {
+      "@id": "formfeed:error"
+    },
+    "created_at": {
+      "@id": "formfeed:created_at",
+      "@type": "xsd:dateTime"
+    },
+    "completed_at": {
+      "@id": "formfeed:completed_at",
+      "@type": "xsd:dateTime"
+    },
+    "Job": "formfeed:Job",
+    "total": {
+      "@id": "formfeed:total",
+      "@type": "xsd:integer"
+    },
+    "succeeded": {
+      "@id": "formfeed:succeeded",
+      "@type": "xsd:integer"
+    },
+    "failed": {
+      "@id": "formfeed:failed",
+      "@type": "xsd:integer"
+    },
+    "zip_url": {
+      "@id": "formfeed:zip_url",
+      "@type": "@id"
+    },
+    "items": {
+      "@id": "formfeed:items",
+      "@container": "@list"
+    },
+    "Template": "formfeed:Template",
+    "slug": {
+      "@id": "formfeed:slug",
+      "@type": "xsd:string"
+    },
+    "name": {
+      "@id": "formfeed:name",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "formfeed:description",
+      "@type": "xsd:string"
+    },
+    "kind": {
+      "@id": "formfeed:kind",
+      "@type": "@id"
+    },
+    "tags": {
+      "@id": "formfeed:tags",
+      "@container": "@list"
+    },
+    "published_version": {
+      "@id": "formfeed:published_version",
+      "@type": "xsd:integer"
+    },
+    "latest_version": {
+      "@id": "formfeed:latest_version",
+      "@type": "xsd:integer"
+    },
+    "updated_at": {
+      "@id": "formfeed:updated_at",
+      "@type": "xsd:dateTime"
+    },
+    "TemplateCreate": "formfeed:TemplateCreate",
+    "css": {
+      "@id": "formfeed:css",
+      "@type": "xsd:string"
+    },
+    "head": {
+      "@id": "formfeed:head",
+      "@type": "xsd:string"
+    },
+    "sample_data": {
+      "@id": "formfeed:sample_data"
+    },
+    "data_schema": {
+      "@id": "formfeed:data_schema"
+    },
+    "i18n": {
+      "@id": "formfeed:i18n"
+    },
+    "partials": {
+      "@id": "formfeed:partials"
+    },
+    "publish": {
+      "@id": "formfeed:publish",
+      "@type": "xsd:boolean"
+    },
+    "TemplateVersionCreate": "formfeed:TemplateVersionCreate",
+    "data_sets": {
+      "@id": "formfeed:data_sets"
+    },
+    "change_note": {
+      "@id": "formfeed:change_note",
+      "@type": "xsd:string"
+    },
+    "base_checksum": {
+      "@id": "formfeed:base_checksum",
+      "@type": "xsd:string"
+    },
+    "allow_breaking": {
+      "@id": "formfeed:allow_breaking",
+      "@type": "xsd:boolean"
+    },
+    "SchemaChange": "formfeed:SchemaChange",
+    "pointer": {
+      "@id": "formfeed:pointer",
+      "@type": "xsd:string"
+    },
+    "breaking": {
+      "@id": "formfeed:breaking",
+      "@type": "xsd:boolean"
+    },
+    "SchemaCheck": "formfeed:SchemaCheck",
+    "source": {
+      "@id": "formfeed:source",
+      "@type": "xsd:string"
+    },
+    "safe": {
+      "@id": "formfeed:safe",
+      "@container": "@list"
+    },
+    "Channel": "formfeed:Channel",
+    "canary": {
+      "@id": "formfeed:canary"
+    },
+    "previous_version": {
+      "@id": "formfeed:previous_version",
+      "@type": "xsd:integer"
+    },
+    "usage_24h": {
+      "@id": "formfeed:usage_24h",
+      "@container": "@list"
+    },
+    "schema_check": {
+      "@id": "formfeed:schema_check",
+      "@type": "@id"
+    },
+    "TemplateVersion": "formfeed:TemplateVersion",
+    "number": {
+      "@id": "formfeed:number",
+      "@type": "xsd:integer"
+    },
+    "checksum": {
+      "@id": "formfeed:checksum",
+      "@type": "xsd:string"
+    },
+    "source_file": {
+      "@id": "formfeed:source_file"
+    },
+    "published_at": {
+      "@id": "formfeed:published_at",
+      "@type": "xsd:dateTime"
+    },
+    "File": "formfeed:File",
+    "content_type": {
+      "@id": "formfeed:content_type",
+      "@type": "xsd:string"
+    },
+    "sha256": {
+      "@id": "formfeed:sha256",
+      "@type": "xsd:string"
+    },
+    "Brand": "formfeed:Brand",
+    "colors": {
+      "@id": "formfeed:colors"
+    },
+    "fonts": {
+      "@id": "formfeed:fonts"
+    },
+    "font_size": {
+      "@id": "formfeed:font_size",
+      "@type": "xsd:string"
+    },
+    "logo": {
+      "@id": "formfeed:logo"
+    },
+    "legal_footer": {
+      "@id": "formfeed:legal_footer",
+      "@type": "xsd:string"
+    },
+    "page_defaults": {
+      "@id": "formfeed:page_defaults"
+    },
+    "Partial": "formfeed:Partial",
+    "PartialPut": "formfeed:PartialPut",
+    "base_version": {
+      "@id": "formfeed:base_version",
+      "@type": "xsd:integer"
+    },
+    "RenderInput": "formfeed:RenderInput",
+    "render_id": {
+      "@id": "formfeed:render_id",
+      "@type": "xsd:string"
+    },
+    "StorageDelivery": "formfeed:StorageDelivery",
+    "bucket": {
+      "@id": "formfeed:bucket",
+      "@type": "xsd:string"
+    },
+    "key": {
+      "@id": "formfeed:key",
+      "@type": "xsd:string"
+    },
+    "reason": {
+      "@id": "formfeed:reason",
+      "@type": "xsd:string"
+    },
+    "StorageError": "formfeed:StorageError",
+    "http_status": {
+      "@id": "formfeed:http_status",
+      "@type": "xsd:integer"
+    },
+    "StorageConnectionPut": "formfeed:StorageConnectionPut",
+    "provider": {
+      "@id": "formfeed:provider",
+      "@type": "xsd:string"
+    },
+    "account_id": {
+      "@id": "formfeed:account_id",
+      "@type": "xsd:string"
+    },
+    "jurisdiction": {
+      "@id": "formfeed:jurisdiction",
+      "@type": "xsd:string"
+    },
+    "endpoint": {
+      "@id": "formfeed:endpoint",
+      "@type": "@id"
+    },
+    "force_path_style": {
+      "@id": "formfeed:force_path_style",
+      "@type": "xsd:boolean"
+    },
+    "prefix": {
+      "@id": "formfeed:prefix",
+      "@type": "xsd:string"
+    },
+    "key_template": {
+      "@id": "formfeed:key_template",
+      "@type": "xsd:string"
+    },
+    "environments": {
+      "@id": "formfeed:environments",
+      "@container": "@list"
+    },
+    "public_base_url": {
+      "@id": "formfeed:public_base_url",
+      "@type": "@id"
+    },
+    "access_key_id": {
+      "@id": "formfeed:access_key_id",
+      "@type": "xsd:string"
+    },
+    "secret_access_key": {
+      "@id": "formfeed:secret_access_key",
+      "@type": "xsd:string"
+    },
+    "StorageConnection": "formfeed:StorageConnection",
+    "workspace_id": {
+      "@id": "formfeed:workspace_id",
+      "@type": "xsd:string"
+    },
+    "paused_reason": {
+      "@id": "formfeed:paused_reason",
+      "@type": "xsd:string"
+    },
+    "access_key_hint": {
+      "@id": "formfeed:access_key_hint",
+      "@type": "xsd:string"
+    },
+    "last_tested_at": {
+      "@id": "formfeed:last_tested_at",
+      "@type": "xsd:dateTime"
+    },
+    "last_error": {
+      "@id": "formfeed:last_error"
+    },
+    "WebhookEndpointCreate": "formfeed:WebhookEndpointCreate",
+    "events": {
+      "@id": "formfeed:events",
+      "@container": "@list"
+    },
+    "enabled": {
+      "@id": "formfeed:enabled",
+      "@type": "xsd:boolean"
+    },
+    "Account": "formfeed:Account",
+    "workspace": {
+      "@id": "formfeed:workspace"
+    },
+    "organization": {
+      "@id": "formfeed:organization"
+    },
+    "plan": {
+      "@id": "formfeed:plan"
+    },
+    "period": {
+      "@id": "formfeed:period"
+    },
+    "limits": {
+      "@id": "formfeed:limits"
+    },
+    "Usage": "formfeed:Usage",
+    "included": {
+      "@id": "formfeed:included",
+      "@type": "xsd:integer"
+    },
+    "used": {
+      "@id": "formfeed:used",
+      "@type": "xsd:decimal"
+    },
+    "overage_used": {
+      "@id": "formfeed:overage_used",
+      "@type": "xsd:decimal"
+    },
+    "overage_balance": {
+      "@id": "formfeed:overage_balance",
+      "@type": "xsd:decimal"
+    },
+    "daily": {
+      "@id": "formfeed:daily",
+      "@container": "@list"
+    },
+    "by_template": {
+      "@id": "formfeed:by_template",
+      "@container": "@list"
+    }
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "Formfeed API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects Formfeed's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-09-28) from openapi/api_formfeed.json, openapi/formfeed-openapi.json.",
+  "dcterms:created": "2026-09-28",
+  "dcterms:source": [
+    "openapi/api_formfeed.json",
+    "openapi/formfeed-openapi.json"
+  ]
+}

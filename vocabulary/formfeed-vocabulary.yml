@@ -1,0 +1,216 @@
+generated: '2026-09-28'
+method: derived
+generator: derive-vocabulary.py
+source:
+- openapi/api_formfeed.json
+- openapi/formfeed-openapi.json
+vocabulary:
+  name: Formfeed Domain Vocabulary
+  description: 'Terms declared by Formfeed''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-09-28'
+  terms:
+  - term: Renders
+    definition: Render PDFs and images from templates, HTML or URLs.
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Templates
+    definition: Manage templates and versions (templates as code).
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Files
+    definition: Workspace assets such as images and fonts.
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Brand
+    definition: 'The organisation''s brand kit: colours, fonts, logos and legal footer every template sees as `brand`.'
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Partials
+    definition: Shared partials of the organisation, included by name from every template of the same engine.
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Webhooks
+    definition: Event delivery to your endpoints.
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Account
+    definition: Workspace, plan and usage.
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: PDF tools
+    definition: Merge, protect, watermark and inspect PDFs.
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Compat
+    definition: Migration shim for apitemplate.io clients.
+    tags:
+    - Resource Group
+    source: openapi/api_formfeed.json
+  - term: Engine
+    definition: 'Enumeration declared by the contract with values: jinja2, liquid, handlebars.'
+    tags:
+    - Enumeration
+    source: openapi/api_formfeed.json#/components/schemas/Engine
+  - term: TemplateKind
+    definition: '`docx` and `pptx` templates are Word and PowerPoint files with tags in their text (Starter plan and above).'
+    tags:
+    - Enumeration
+    source: openapi/api_formfeed.json#/components/schemas/TemplateKind
+  - term: Region
+    definition: 'Enumeration declared by the contract with values: eu, us, apac.'
+    tags:
+    - Enumeration
+    source: openapi/api_formfeed.json#/components/schemas/Region
+  - term: RenderStatus
+    definition: 'Enumeration declared by the contract with values: queued, rendering, succeeded, failed.'
+    tags:
+    - Enumeration
+    source: openapi/api_formfeed.json#/components/schemas/RenderStatus
+  - term: OutputFormat
+    definition: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`,
+      a `pptx` template `pptx` or `pdf`.
+    tags:
+    - Enumeration
+    source: openapi/api_formfeed.json#/components/schemas/OutputFormat
+  - term: Problem
+    definition: 'Object declared by the contract with fields: type, title, status, detail, code, location, request_id, errors, index.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Problem
+  - term: Diagnostic
+    definition: 'Object declared by the contract with fields: severity, message, code, location, path, part, paragraph.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Diagnostic
+  - term: Settings
+    definition: Rendering settings. Deep-merged over the template's settings. See the settings reference.
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Settings
+  - term: RenderRequest
+    definition: 'Object declared by the contract with fields: template, version, html, url, engine, data, output, settings, filename, expires_in,
+      access, mode. (10 more)'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/RenderRequest
+  - term: Render
+    definition: 'Object declared by the contract with fields: id, status, output, download_url, expires_at, bytes, page_count, units, region,
+      environment, template, engine_version. (9 more)'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Render
+  - term: Job
+    definition: 'Object declared by the contract with fields: id, status, total, succeeded, failed, zip_url, storage, items, meta, created_at,
+      completed_at.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Job
+  - term: Template
+    definition: 'Object declared by the contract with fields: id, slug, name, description, kind, engine, tags, published_version, latest_version,
+      created_at, updated_at.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Template
+  - term: TemplateCreate
+    definition: '`html` is required for `pdf` and `image` templates.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/TemplateCreate
+  - term: TemplateVersionCreate
+    definition: '`html` is required for `pdf` and `image` templates.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/TemplateVersionCreate
+  - term: SchemaChange
+    definition: 'Object declared by the contract with fields: path, pointer, kind, breaking, message.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/SchemaChange
+  - term: SchemaCheck
+    definition: 'The data schema of the version going live compared with the one callers use now. `stored`: both versions store a schema, and
+      breaking changes refuse without `allow_breaking`. `inferred`: at least one has none, so schemas inferred from sample data were compared
+      and the result is only a warning. `none`: nothing to compare.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/SchemaCheck
+  - term: Channel
+    definition: 'Object declared by the contract with fields: name, version, canary, previous_version, updated_at, usage_24h, schema_check.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Channel
+  - term: TemplateVersion
+    definition: 'Object declared by the contract with fields: id, number, status, checksum, change_note, html, css, head, settings, sample_data,
+      data_schema, i18n. (5 more)'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/TemplateVersion
+  - term: File
+    definition: 'Object declared by the contract with fields: id, name, content_type, bytes, sha256, url, created_at, updated_at.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/File
+  - term: Partial
+    definition: 'Object declared by the contract with fields: name, engine, description, version, source, created_at, updated_at.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Partial
+  - term: PartialPut
+    definition: 'Object declared by the contract with fields: engine, source, description, base_version.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/PartialPut
+  - term: RenderInput
+    definition: The stored request of a render, as `GET /renders/{id}/input` returns it. Fields that do not apply are left out.
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/RenderInput
+  - term: StorageOption
+    definition: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is copied under the connection''s key
+      template. `false` leaves this document out. `key` names its object below the connection''s prefix instead of the key template: relative,
+      without `.` or `..` segments, at most 1024 bytes; an existing object is overwritten. A render with its own key is never answered from the '
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/StorageOption
+  - term: StorageDelivery
+    definition: 'The output''s copy in the workspace''s own bucket; null when none applies (no connection, a paused one, `storage: false`, a test
+      render the connection does not take). A synchronous response reports `pending`: the copy is made in the background, and `storage.delivered`
+      or `storage.failed` follow as webhook events.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/StorageDelivery
+  - term: StorageError
+    definition: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/StorageError
+  - term: StorageConnectionPut
+    definition: 'Object declared by the contract with fields: provider, region, account_id, jurisdiction, endpoint, force_path_style, bucket,
+      prefix, key_template, environments, public_base_url, access_key_id. (1 more)'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/StorageConnectionPut
+  - term: StorageConnection
+    definition: 'Object declared by the contract with fields: id, workspace_id, provider, endpoint, region, account_id, jurisdiction, bucket,
+      prefix, force_path_style, key_template, environments. (8 more)'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/StorageConnection
+  - term: WebhookEndpointCreate
+    definition: 'Object declared by the contract with fields: url, events, environments, description, enabled.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/WebhookEndpointCreate
+  - term: Usage
+    definition: 'Object declared by the contract with fields: period, included, used, overage_used, overage_balance, daily, by_template.'
+    tags:
+    - Object
+    source: openapi/api_formfeed.json#/components/schemas/Usage

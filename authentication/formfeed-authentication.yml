@@ -1,0 +1,25 @@
+generated: '2026-09-28'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://docs.formfeed.dev/getting-started/two-factor-authentication
+sources:
+- https://docs.formfeed.dev/getting-started/two-factor-authentication
+- https://docs.formfeed.dev/api/authentication
+- https://docs.formfeed.dev/de/api/authentication
+- https://docs.formfeed.dev/api/overview
+description: Formfeed API authentication uses API keys either as a Bearer token in the Authorization header or as an X‑API‑Key header.
+schemes:
+- type: http-bearer
+  name: Bearer token
+  evidence: 'Authorization : Bearer ff_live_3f9c...'
+  location: header
+  header: Authorization
+  how_to_obtain: Keys are created in the app under API keys, belong to exactly one workspace, and are shown once.
+- type: apiKey
+  name: X‑API‑Key header
+  evidence: 'X-API-Key: ff_live_3f9c... is accepted as well.'
+  location: header
+  header: X-API-Key
+  how_to_obtain: Keys are created in the app under API keys, belong to exactly one workspace, and are shown once.
+note: No OAuth2 flows are documented.
+docs: https://docs.formfeed.dev/getting-started/two-factor-authentication

@@ -1,0 +1,144 @@
+generated: '2026-09-28'
+method: derived
+generator: derive-data-model.py
+source:
+- openapi/api_formfeed.json
+- openapi/formfeed-openapi.json
+notation: has_one = property $ref; has_many = array of $ref; belongs_to = <entity>_id field
+summary:
+  entities: 27
+  entities_in_spec: 27
+  relationships: 17
+entities:
+- name: Account
+  fields: 6
+- name: Brand
+  fields: 9
+- name: Channel
+  fields: 7
+- name: Diagnostic
+  fields: 7
+- name: File
+  fields: 8
+- name: Job
+  fields: 11
+- name: Partial
+  fields: 7
+- name: PartialPut
+  fields: 4
+- name: Problem
+  fields: 9
+- name: Render
+  fields: 21
+- name: RenderInput
+  fields: 14
+  description: The stored request of a render, as `GET /renders/{id}/input` returns it. Fields that do not apply
+    are left out.
+- name: RenderRequest
+  fields: 22
+- name: SchemaChange
+  fields: 5
+- name: SchemaCheck
+  fields: 3
+  description: 'The data schema of the version going live compared with the one callers use now. `stored`: both
+    versions store a schema, and breaking changes refuse without `allow_breaking`. `inferred`: at least one '
+- name: Settings
+  fields: 11
+  description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
+- name: StorageConnection
+  fields: 20
+- name: StorageConnectionPut
+  fields: 13
+- name: StorageConnectionState
+  fields: 0
+- name: StorageDelivery
+  fields: 6
+  description: The output's copy in the workspace's own bucket; null when none applies (no connection, a
+- name: StorageError
+  fields: 3
+  description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+- name: Template
+  fields: 11
+- name: TemplateCreate
+  fields: 15
+  description: '`html` is required for `pdf` and `image` templates.'
+- name: TemplateVersion
+  fields: 17
+- name: TemplateVersionCreate
+  fields: 13
+  description: '`html` is required for `pdf` and `image` templates.'
+- name: Usage
+  fields: 7
+- name: WebhookEndpoint
+  fields: 0
+- name: WebhookEndpointCreate
+  fields: 5
+relationships:
+- from: RenderRequest
+  to: Settings
+  type: has_one
+  via: settings
+- from: Render
+  to: StorageDelivery
+  type: has_one
+  via: storage
+- from: Render
+  to: Problem
+  type: has_one
+  via: error
+- from: Job
+  to: StorageDelivery
+  type: has_one
+  via: storage
+- from: Job
+  to: Render
+  type: has_many
+  via: items
+- from: TemplateCreate
+  to: Settings
+  type: has_one
+  via: settings
+- from: TemplateVersionCreate
+  to: Settings
+  type: has_one
+  via: settings
+- from: SchemaCheck
+  to: SchemaChange
+  type: has_many
+  via: breaking
+- from: SchemaCheck
+  to: SchemaChange
+  type: has_many
+  via: safe
+- from: Channel
+  to: SchemaCheck
+  type: has_one
+  via: schema_check
+- from: TemplateVersion
+  to: Settings
+  type: has_one
+  via: settings
+- from: TemplateVersion
+  to: SchemaCheck
+  type: has_one
+  via: schema_check
+- from: RenderInput
+  to: Render
+  type: belongs_to
+  via: render_id
+- from: StorageDelivery
+  to: StorageError
+  type: has_one
+  via: error
+- from: StorageConnectionPut
+  to: Account
+  type: belongs_to
+  via: account_id
+- from: StorageConnection
+  to: Account
+  type: belongs_to
+  via: account_id
+- from: StorageConnection
+  to: StorageError
+  type: has_one
+  via: last_error

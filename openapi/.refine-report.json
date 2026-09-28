@@ -1,0 +1,39 @@
+{
+  "provider": "formfeed",
+  "sources": [
+    "api_formfeed.json",
+    "formfeed-openapi.json"
+  ],
+  "outputs": [
+    "formfeed-account-api-openapi.yml",
+    "formfeed-brand-api-openapi.yml",
+    "formfeed-compat-api-openapi.yml",
+    "formfeed-files-api-openapi.yml",
+    "formfeed-pdf-tools-api-openapi.yml",
+    "formfeed-partials-api-openapi.yml",
+    "formfeed-renders-api-openapi.yml",
+    "formfeed-templates-api-openapi.yml",
+    "formfeed-webhooks-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/api_formfeed.json",
+    "archived openapi/formfeed-openapi.json"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "api_formfeed.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "formfeed-openapi.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "tag 'Account' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'Brand' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'Compat' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'Files' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'PDF tools' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'Partials' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'Renders' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'Templates' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "tag 'Webhooks' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
+    "apis.yml register: written (+9 apis, 9 total)"
+  ],
+  "skipped": []
+}

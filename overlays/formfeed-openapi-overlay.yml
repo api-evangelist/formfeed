@@ -1,0 +1,9 @@
+{
+  "generated": "2026-09-28",
+  "method": "derived",
+  "source": "openapi/formfeed-openapi.json",
+  "overlay": {
+    "openapi": "3.0.3",
+    "actions": []
+  }
+}

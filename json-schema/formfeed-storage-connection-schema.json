@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/formfeed/main/json-schema/formfeed-storage-connection-schema.json",
+  "title": "StorageConnection",
+  "x-generated": "2026-09-28",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/formfeed-openapi.json#/components/schemas/StorageConnection",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "workspace_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "s3",
+        "r2",
+        "s3_compatible"
+      ]
+    },
+    "endpoint": {
+      "type": "string",
+      "format": "uri"
+    },
+    "region": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "jurisdiction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "default",
+        "eu"
+      ]
+    },
+    "bucket": {
+      "type": "string"
+    },
+    "prefix": {
+      "type": "string"
+    },
+    "force_path_style": {
+      "type": "boolean"
+    },
+    "key_template": {
+      "type": "string"
+    },
+    "environments": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "live",
+          "test"
+        ]
+      }
+    },
+    "public_base_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused"
+      ]
+    },
+    "paused_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "failures",
+        "workspace_deleted",
+        "plan"
+      ],
+      "description": "`failures`: five permanent failures in a row (test the connection again to resume); `plan`: the plan no longer includes bring your own storage."
+    },
+    "access_key_hint": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The last four characters of the access key id."
+    },
+    "last_tested_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "last_error": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/StorageError"
+        }
+      ],
+      "nullable": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "StorageError": {
+      "type": "object",
+      "description": "The provider's answer, reduced: its code, the HTTP status and the first line of its message.",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

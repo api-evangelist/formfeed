@@ -1,0 +1,391 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/formfeed/main/json-schema/formfeed-render-schema.json",
+  "title": "Render",
+  "x-generated": "2026-09-28",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/formfeed-openapi.json#/components/schemas/Render",
+  "type": "object",
+  "required": [
+    "id",
+    "status",
+    "output",
+    "region",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/RenderStatus"
+    },
+    "output": {
+      "$ref": "#/$defs/OutputFormat"
+    },
+    "download_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri"
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "bytes": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "page_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "units": {
+      "type": "number"
+    },
+    "region": {
+      "$ref": "#/$defs/Region"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "live",
+        "test"
+      ]
+    },
+    "template": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer"
+        },
+        "channel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The release channel the version came from (`published` by default); null when the request named a version number or `latest`."
+        },
+        "canary": {
+          "type": "boolean",
+          "description": "True when the channel's canary share picked this version."
+        }
+      }
+    },
+    "engine_version": {
+      "type": "string",
+      "description": "Chromium build and engine package version, for reproducibility."
+    },
+    "template_checksum": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "output_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deduplicated": {
+      "type": "boolean"
+    },
+    "storage": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/StorageDelivery"
+        }
+      ],
+      "nullable": true
+    },
+    "timings": {
+      "type": "object",
+      "properties": {
+        "queue_ms": {
+          "type": "integer"
+        },
+        "compile_ms": {
+          "type": "integer"
+        },
+        "render_ms": {
+          "type": "integer"
+        },
+        "upload_ms": {
+          "type": "integer"
+        },
+        "total_ms": {
+          "type": "integer"
+        }
+      }
+    },
+    "error": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Problem"
+        }
+      ],
+      "nullable": true
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "OutputFormat": {
+      "type": "string",
+      "enum": [
+        "pdf",
+        "png",
+        "jpg",
+        "webp",
+        "docx",
+        "pptx"
+      ],
+      "description": "PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`."
+    },
+    "Problem": {
+      "type": "object",
+      "required": [
+        "type",
+        "title",
+        "status"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "format": "uri"
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string",
+          "enum": [
+            "template_not_found",
+            "template_syntax_error",
+            "template_runtime_error",
+            "data_validation_error",
+            "navigation_failed",
+            "render_timeout",
+            "page_limit_exceeded",
+            "output_too_large",
+            "file_too_large",
+            "source_not_found",
+            "source_invalid",
+            "source_encrypted",
+            "tool_failed",
+            "file_type_unsupported",
+            "office_document_invalid",
+            "office_document_too_large",
+            "office_conversion_failed",
+            "office_unavailable",
+            "unsupported_in_office",
+            "test_output_unavailable",
+            "quota_exceeded",
+            "rate_limited",
+            "region_unavailable",
+            "worker_exhausted",
+            "invalid_request",
+            "unauthorized",
+            "forbidden",
+            "not_found",
+            "conflict",
+            "not_implemented",
+            "schema_breaking_change",
+            "channel_not_found",
+            "channel_name_invalid",
+            "channel_in_use",
+            "render_input_expired",
+            "listen_session_limit",
+            "listen_session_ended",
+            "last_workspace",
+            "storage_not_configured",
+            "storage_test_failed"
+          ]
+        },
+        "location": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "line": {
+              "type": "integer"
+            },
+            "column": {
+              "type": "integer"
+            },
+            "file": {
+              "type": "string",
+              "enum": [
+                "template",
+                "css",
+                "head",
+                "header",
+                "footer"
+              ]
+            },
+            "part": {
+              "type": "string",
+              "description": "Office templates: the part of the file (document, header, footer, slide)."
+            },
+            "paragraph": {
+              "type": "integer",
+              "description": "Office templates: the paragraph within the part, from 1."
+            }
+          }
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "description": "`data_validation_error` only: every place where the data does not match the schema.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "index": {
+          "type": "integer",
+          "description": "Batch requests only: the first item that failed."
+        }
+      }
+    },
+    "Region": {
+      "type": "string",
+      "enum": [
+        "eu",
+        "us",
+        "apac"
+      ]
+    },
+    "RenderStatus": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "rendering",
+        "succeeded",
+        "failed"
+      ]
+    },
+    "StorageDelivery": {
+      "type": "object",
+      "description": "The output's copy in the workspace's own bucket; null when none applies (no connection, a\npaused one, `storage: false`, a test render the connection does not take). A synchronous\nresponse reports `pending`: the copy is made in the background, and `storage.delivered` or\n`storage.failed` follow as webhook events.\n",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "delivered",
+            "failed"
+          ]
+        },
+        "bucket": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The object below the connection's `public_base_url`; null without one."
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "permanent",
+            "rejected",
+            "exhausted",
+            "source_gone",
+            "connection_deleted",
+            "connection_paused",
+            "plan",
+            "workspace_deleted"
+          ],
+          "description": "Why a delivery failed: the credentials or bucket (`permanent`), the object (`rejected`), retries used up (`exhausted`), the output expired first (`source_gone`), or the connection went away."
+        },
+        "error": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/StorageError"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "StorageError": {
+      "type": "object",
+      "description": "The provider's answer, reduced: its code, the HTTP status and the first line of its message.",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,30 +1,323 @@
 aid: formfeed
 name: Formfeed
-description: 'Formfeed is a company surfaced via the API Evangelist harvest backlog (source: new-submission)
-  and added to the network as a stub for full-pipeline profiling.'
+image: https://formfeed.dev/app-screenshots/en/editor.webp
+description: Formfeed offers a PDF and image generation API that lets developers render templates written in Jinja2, Liquid, or Handlebars into
+  PDFs, PNGs, and other formats. It can also convert Word and PowerPoint files. The service runs in Frankfurt with EU‑only data residency and
+  provides a free tier of 100 units per month. SDKs are available for TypeScript and Python, a CLI exists, and there is MCP integration for AI
+  agents. Features include batch rendering, webhook notifications, versioned templates, and a visual editor for designing documents.
 url: https://raw.githubusercontent.com/api-evangelist/formfeed/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:new-submission
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-28 (modular-v1; was harvest)
 specificationVersion: '0.20'
 created: '2026-09-28'
 modified: '2026-09-28'
 tags:
-- Company
-apis: []
+- PDF
+- ImageGeneration
+- Templates
+- API
+- DeveloperTools
+- SaaS
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/formfeed-agentic-access.yml
+- type: RateLimits
+  url: rate-limits/formfeed-rate-limits.yml
+- type: Plans
+  url: plans/formfeed-plans-pricing.yml
+- type: Spectral
+  url: rules/formfeed-rules.yml
+- type: JSONLD
+  url: json-ld/formfeed-context.jsonld
+- type: Vocabulary
+  url: vocabulary/formfeed-vocabulary.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Webhooks
+  url: asyncapi/formfeed-webhooks.yml
+- type: DataModel
+  url: data-model/formfeed-data-model.yml
+- type: CLI
+  url: cli/formfeed-cli.yml
+- type: ChangeLog
+  url: changelog/formfeed-changelog.yml
+- type: Idempotency
+  url: conventions/formfeed-conventions.yml
+- type: Conventions
+  url: conventions/formfeed-conventions.yml
+- type: Compliance
+  url: https://formfeed.dev/security
+- type: Authentication
+  url: authentication/formfeed-authentication.yml
+- type: ErrorCatalog
+  url: errors/formfeed-problem-types.yml
+- type: Conformance
+  url: conformance/formfeed-conformance.yml
+- type: Overlay
+  url: overlays/formfeed-openapi-overlay.yaml
+- type: LLMsTxt
+  url: llms/formfeed-llms.txt
+- type: SecurityTxt
+  url: well-known/formfeed-security.txt
+- type: WellKnown
+  url: well-known/formfeed-well-known.yml
+- type: Hosts
+  url: hosts/formfeed-hosts.yml
+- type: Vendors
+  url: vendors/formfeed-vendors.yml
+- type: SDKs
+  url: packages/formfeed-packages.yml
+- type: Packages
+  url: packages/formfeed-packages.yml
+- type: Support
+  url: https://formfeed.dev/support
+- type: Security
+  url: https://formfeed.dev/security
+- type: ChangeLog
+  url: https://formfeed.dev/changelog
+- type: GettingStarted
+  url: https://docs.formfeed.dev/getting-started/quickstart
+- type: APIReference
+  url: https://docs.formfeed.dev/api/reference/formfeed
+- type: TrustCenter
+  url: security/formfeed-trust-center.yml
+- type: VulnerabilityDisclosure
+  url: security/formfeed-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/formfeed-domain-security.yml
 - type: Website
   url: https://formfeed.dev/
 - type: Documentation
   url: https://docs.formfeed.dev/api/overview
-x-submission-notes: PDF and image generation API (templates + JSON in, documents out); Philipp Staudt
-  IT-Dienstleistungen, Saarbruecken, Germany. Root and docs return 403 to plain fetchers (bot protection),
-  llms.txt 200 -- use the browser strategy (fetch-url.py).
+- type: Blog
+  url: https://formfeed.dev/blog
+- type: Pricing
+  url: https://formfeed.dev/pricing
+- type: TermsOfService
+  url: https://formfeed.dev/legal/terms
+- type: PrivacyPolicy
+  url: https://formfeed.dev/legal/privacy
+- type: StatusPage
+  url: https://status.formfeed.dev
+- type: SignUp
+  url: https://formfeed.dev/pricing
+- type: Login
+  url: https://app.formfeed.dev/en/sign-in
+apis:
+- aid: formfeed:formfeed-account-api
+  name: Formfeed Account API
+  description: Workspace, plan and usage.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Account
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-account-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-brand-api
+  name: Formfeed Brand API
+  description: >-
+    The organisation's brand kit: colours, fonts, logos and legal footer every template sees as `brand`.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Brand
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-brand-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-compat-api
+  name: Formfeed Compat API
+  description: Migration shim for apitemplate.io clients.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Compat
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-compat-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-files-api
+  name: Formfeed Files API
+  description: Workspace assets such as images and fonts.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Files
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-files-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-partials-api
+  name: Formfeed Partials API
+  description: >-
+    Shared partials of the organisation, included by name from every template of the same engine.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Partials
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-partials-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-pdf-tools-api
+  name: Formfeed PDF tools API
+  description: Merge, protect, watermark and inspect PDFs.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - PDF tools
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-pdf-tools-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-renders-api
+  name: Formfeed Renders API
+  description: Render PDFs and images from templates, HTML or URLs.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Renders
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-renders-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-templates-api
+  name: Formfeed Templates API
+  description: Manage templates and versions (templates as code).
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-templates-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+- aid: formfeed:formfeed-webhooks-api
+  name: Formfeed Webhooks API
+  description: Event delivery to your endpoints.
+  humanURL: https://docs.formfeed.dev/api/overview
+  baseURL: https://api.formfeed.dev/v1
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/formfeed-webhooks-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/formfeed-render-request-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-put-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-render-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-brand-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-storage-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/formfeed-template-version-create-schema.json
+x-submission-notes: PDF and image generation API (templates + JSON in, documents out); Philipp Staudt IT-Dienstleistungen, Saarbruecken, Germany.
+  Root and docs return 403 to plain fetchers (bot protection), llms.txt 200 -- use the browser strategy (fetch-url.py).
 x-submission-probe: '2026-09-28: root 403 + invented 403 (bot-blocking), llms.txt 200'
 x-submitted-by: it@staudt-it-dienstleistungen.de (apis.io/add, 2026-09-27)
+x-enrichment:
+  date: '2026-09-28'
+  status: enriched
+  artifacts_added: 36
+  pass: modular-v1
+  engine: identity=local,contract=local,surfaces=local,docs=local,regulatory=local

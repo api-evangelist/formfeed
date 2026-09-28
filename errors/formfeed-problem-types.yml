@@ -1,0 +1,98 @@
+generated: '2026-09-28'
+method: derived
+generator: derive-problem-types.py
+source:
+- openapi/api_formfeed.json
+- openapi/formfeed-openapi.json
+format: rfc9457
+envelope:
+  media_type: application/problem+json
+  schema: Problem
+coverage:
+  operations: 122
+  statuses_declared: 12
+problems:
+- status: 400
+  title: Bad Request
+  description: 'Invalid name or body, or the organisation already holds 200 shared partials (`feature: "partials"`).'
+  operations: 2
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 402
+  title: Payment Required
+  description: Monthly units exhausted and no overage available.
+  operations: 2
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 403
+  title: Forbidden
+  description: Error (RFC 9457 problem details).
+  operations: 4
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 404
+  title: Not Found
+  description: Not found.
+  operations: 52
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 409
+  title: Conflict
+  description: Error (RFC 9457 problem details).
+  operations: 18
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 410
+  title: Gone
+  description: Error (RFC 9457 problem details).
+  operations: 4
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 413
+  title: Content Too Large
+  description: File too large.
+  operations: 6
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 415
+  title: Unsupported Media Type
+  description: Not a Word or PowerPoint file of the template's kind.
+  operations: 4
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 422
+  title: Unprocessable Content
+  description: Validation, template or data error. Template errors include `location`.
+  operations: 16
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 429
+  title: Too Many Requests
+  description: Rate limit exceeded.
+  operations: 2
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: 503
+  title: Service Unavailable
+  description: The converter is busy; retry after `Retry-After` seconds.
+  operations: 2
+  media_types:
+  - application/problem+json
+  schema: Problem
+- status: default
+  title: null
+  description: Error (RFC 9457 problem details).
+  operations: 122
+  media_types:
+  - application/problem+json
+  schema: Problem

@@ -1,0 +1,318 @@
+openapi: 3.2.0
+info:
+  title: Formfeed Compat API
+  version: 1.0.0
+  contact:
+    name: Formfeed support
+    email: support@formfeed.dev
+    url: https://formfeed.dev
+  termsOfService: https://formfeed.dev/legal/terms
+  description: 'Operations tagged Compat across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api-eu.formfeed.dev/v1
+  description: EU (Frankfurt), where every workspace renders and stores today
+- url: https://api.formfeed.dev/v1
+  description: Routes to the workspace's region
+- url: https://api-us.formfeed.dev/v1
+  description: Reserved for a US region, which is not open yet
+security:
+- bearerAuth: []
+tags:
+- name: Compat
+  description: Migration shim for apitemplate.io clients.
+paths:
+  /compat/apitemplate/create-pdf:
+    post:
+      tags:
+      - Compat
+      operationId: compatApitemplateCreatePdf
+      summary: apitemplate.io compatible create-pdf
+      description: Accepts apitemplate.io's request and returns its response shape. Migration only; no new features.
+      parameters:
+      - name: template_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: export_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - file
+          - json
+          default: json
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          $ref: '#/components/responses/CompatResponse'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /compat/apitemplate/create-image:
+    post:
+      tags:
+      - Compat
+      operationId: compatApitemplateCreateImage
+      summary: apitemplate.io compatible create-image
+      description: Accepts apitemplate.io's request and returns its response shape. Migration only.
+      parameters:
+      - name: template_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: output_image_type
+        in: query
+        schema:
+          type: string
+          enum:
+          - 1
+          - 2
+          - all
+          default: 1
+        description: apitemplate.io image type flag (1 = jpeg, 2 = png, all = both).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          $ref: '#/components/responses/CompatResponse'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /compat/apitemplate/create-pdf-from-html:
+    post:
+      tags:
+      - Compat
+      operationId: compatApitemplateCreatePdfFromHtml
+      summary: apitemplate.io compatible create-pdf-from-html
+      description: Accepts apitemplate.io's `body` (HTML), `css`, `data` and `settings` fields. Migration only.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                css:
+                  type: string
+                data:
+                  type: object
+                  additionalProperties: true
+                settings:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          $ref: '#/components/responses/CompatResponse'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /compat/apitemplate/create-pdf-from-url:
+    post:
+      tags:
+      - Compat
+      operationId: compatApitemplateCreatePdfFromUrl
+      summary: apitemplate.io compatible create-pdf-from-url
+      description: Accepts apitemplate.io's `url` and `settings` fields. Migration only.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                settings:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          $ref: '#/components/responses/CompatResponse'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+components:
+  schemas:
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+  responses:
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    CompatResponse:
+      description: apitemplate.io shaped response.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              download_url:
+                type: string
+                format: uri
+              download_url_png:
+                type: string
+                format: uri
+                description: create-image only.
+              transaction_ref:
+                type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: 'API key from the workspace: `ff_live_…` or `ff_test_…`. Also accepted in the `X-API-Key` header.'
+externalDocs:
+  description: Guides, SDKs and the CLI
+  url: https://docs.formfeed.dev
+x-refined-from:
+- api_formfeed.json
+- formfeed-openapi.json

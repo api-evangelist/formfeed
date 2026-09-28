@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/formfeed/main/json-schema/formfeed-template-version-create-schema.json",
+  "title": "TemplateVersionCreate",
+  "description": "`html` is required for `pdf` and `image` templates.",
+  "x-generated": "2026-09-28",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/formfeed-openapi.json#/components/schemas/TemplateVersionCreate",
+  "type": "object",
+  "properties": {
+    "html": {
+      "type": "string"
+    },
+    "css": {
+      "type": "string"
+    },
+    "head": {
+      "type": "string"
+    },
+    "settings": {
+      "$ref": "#/$defs/Settings"
+    },
+    "sample_data": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "data_schema": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "i18n": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "partials": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder."
+    },
+    "data_sets": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Named sample data sets besides `sample_data` (`name` → data), as the editor shows them and `formfeed templates push` sends them from `data/*.json`. At most 50."
+    },
+    "change_note": {
+      "type": "string"
+    },
+    "base_checksum": {
+      "type": "string",
+      "description": "Checksum of the version this draft was based on; conflict (409) if the latest version differs."
+    },
+    "publish": {
+      "type": "boolean",
+      "default": false
+    },
+    "allow_breaking": {
+      "type": "boolean",
+      "default": false,
+      "description": "With `publish`: publish although the data schema breaks callers of the published version (otherwise 409 `schema_breaking_change`)."
+    }
+  },
+  "$defs": {
+    "Settings": {
+      "type": "object",
+      "description": "Rendering settings. Deep-merged over the template's settings. See the settings reference.",
+      "additionalProperties": true,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "type": "string"
+            },
+            "width": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "height": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "landscape": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "margin": {
+          "type": "object",
+          "properties": {
+            "top": {
+              "type": "string"
+            },
+            "right": {
+              "type": "string"
+            },
+            "bottom": {
+              "type": "string"
+            },
+            "left": {
+              "type": "string"
+            }
+          }
+        },
+        "header": {
+          "type": "object",
+          "description": "Printed across the whole page width inside the top margin.",
+          "properties": {
+            "html": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string"
+            },
+            "padding": {
+              "type": "string",
+              "description": "CSS padding inside the header box; `0` for designs that run edge to edge.",
+              "default": "0 10mm"
+            }
+          }
+        },
+        "footer": {
+          "type": "object",
+          "description": "Printed across the whole page width inside the bottom margin.",
+          "properties": {
+            "html": {
+              "type": "string"
+            },
+            "height": {
+              "type": "string"
+            },
+            "padding": {
+              "type": "string",
+              "description": "CSS padding inside the footer box; `0` for designs that run edge to edge.",
+              "default": "0 10mm"
+            }
+          }
+        },
+        "printBackground": {
+          "type": "boolean",
+          "default": true
+        },
+        "scale": {
+          "type": "number",
+          "default": 1
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            },
+            "deviceScaleFactor": {
+              "type": "number",
+              "default": 2
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "png",
+                "jpeg",
+                "webp"
+              ],
+              "description": "Output of an image template when the request names no `output`. `jpg` is accepted as well."
+            },
+            "quality": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "fullPage": {
+              "type": "boolean",
+              "default": false
+            },
+            "transparent": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "office": {
+          "type": "object",
+          "description": "Word and PowerPoint templates. Page setup, margins, headers and footers come from the document; the Chromium settings above do not apply.",
+          "properties": {
+            "output": {
+              "type": "string",
+              "enum": [
+                "docx",
+                "pptx",
+                "pdf"
+              ],
+              "description": "Output when the request names none; the template's own format without it."
+            }
+          }
+        },
+        "locale": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

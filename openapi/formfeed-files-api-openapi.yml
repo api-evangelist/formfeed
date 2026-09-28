@@ -1,0 +1,355 @@
+openapi: 3.2.0
+info:
+  title: Formfeed Files API
+  version: 1.0.0
+  contact:
+    name: Formfeed support
+    email: support@formfeed.dev
+    url: https://formfeed.dev
+  termsOfService: https://formfeed.dev/legal/terms
+  description: 'Operations tagged Files across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api-eu.formfeed.dev/v1
+  description: EU (Frankfurt), where every workspace renders and stores today
+- url: https://api.formfeed.dev/v1
+  description: Routes to the workspace's region
+- url: https://api-us.formfeed.dev/v1
+  description: Reserved for a US region, which is not open yet
+security:
+- bearerAuth: []
+tags:
+- name: Files
+  description: Workspace assets such as images and fonts.
+paths:
+  /files:
+    get:
+      tags:
+      - Files
+      operationId: listFiles
+      summary: List workspace files
+      description: 'The workspace file library: the images and PDFs templates reference by name. Newest first,
+
+        paged with `cursor`. Needs `file:read`.'
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      - name: prefix
+        in: query
+        description: Only names that start with this, so a folder like `brand/` can be listed on its own.
+        schema:
+          type: string
+          maxLength: 200
+      responses:
+        '200':
+          description: Files.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/File'
+                  next_cursor:
+                    type:
+                    - string
+                    - 'null'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      tags:
+      - Files
+      operationId: uploadFile
+      summary: Upload a file
+      description: 'Adds an image or a PDF to the workspace library and returns its CDN URL. A template reaches it
+
+        with `asset(''logo.png'')`, and relative image paths resolve against the same library.
+
+
+        The name is the address: uploading the same name replaces that file in place and answers 200
+
+        instead of 201, so every template that references it shows the new version without a change.
+
+        Names are letters, digits, dot, dash, underscore and `/` for folders. Accepted types are PNG,
+
+        JPEG, WebP, GIF, SVG, AVIF and PDF, up to 10 MB; a file whose bytes do not match its type is
+
+        refused. Organisation fonts are managed in the app, not here.
+
+
+        The library is served without a signature and cached at the edge for an hour, so a replacement
+
+        takes up to an hour to reach every viewer, and a deleted file can still be served for that
+
+        long. Do not put confidential documents in it. Needs `file:write`.'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                name:
+                  type: string
+                  maxLength: 200
+                  description: The library name. Defaults to the uploaded file's name, cleaned up; a name given here must already be valid.
+      responses:
+        '200':
+          description: A file with this name was replaced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '201':
+          description: Uploaded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '413':
+          description: File too large.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /files/{id}:
+    get:
+      tags:
+      - Files
+      operationId: getFile
+      summary: Read one file
+      description: Metadata and URL of one library file. Needs `file:read`.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: File.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags:
+      - Files
+      operationId: deleteFile
+      summary: Delete a file
+      description: 'Removes the file and its bytes. Templates that reference the name render a missing image
+
+        afterwards, and the CDN may serve the file for up to an hour more. Needs `file:delete`.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+components:
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+  schemas:
+    File:
+      type: object
+      properties:
+        id:
+          type: string
+          example: fil_5b0000000000400080000000000000a1
+        name:
+          type: string
+          example: brand/logo.png
+        content_type:
+          type: string
+          example: image/png
+        bytes:
+          type: integer
+        sha256:
+          type: string
+          description: Hash of the stored bytes.
+        url:
+          type: string
+          format: uri
+          description: CDN URL; the same URL `asset(name)` produces.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+          description: When the name was last replaced.
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+  responses:
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: 'API key from the workspace: `ff_live_…` or `ff_test_…`. Also accepted in the `X-API-Key` header.'
+externalDocs:
+  description: Guides, SDKs and the CLI
+  url: https://docs.formfeed.dev
+x-refined-from:
+- api_formfeed.json
+- formfeed-openapi.json

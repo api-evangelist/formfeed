@@ -1,0 +1,40 @@
+generated: '2026-09-28'
+method: generated
+generator: extract-docs-artifacts.py skills (local)
+source: openapi/api_formfeed.json
+skills:
+- file: skills/formfeed-manage-storage-connection.md
+  name: formfeed-manage-storage-connection
+  api: openapi/api_formfeed.json
+  operations:
+  - getStorageConnection
+  - putStorageConnection
+  - testStorageConnection
+- file: skills/formfeed-manage-webhooks.md
+  name: formfeed-manage-webhooks
+  api: openapi/api_formfeed.json
+  operations:
+  - createWebhook
+  - testWebhook
+  - listWebhooks
+- file: skills/formfeed-upload-and-manage-file.md
+  name: formfeed-upload-and-manage-file
+  api: openapi/api_formfeed.json
+  operations:
+  - uploadFile
+  - getFile
+  - listFiles
+  - deleteFile
+- file: skills/formfeed-create-and-publish-template.md
+  name: formfeed-create-and-publish-template
+  api: openapi/api_formfeed.json
+  operations:
+  - createTemplate
+  - createTemplateVersion
+  - publishTemplateVersion
+- file: skills/formfeed-create-render-and-fetch-result.md
+  name: formfeed-create-render-and-fetch-result
+  api: openapi/api_formfeed.json
+  operations:
+  - createRender
+  - getRenderResult

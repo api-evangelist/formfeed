@@ -1,0 +1,285 @@
+openapi: 3.2.0
+info:
+  title: Formfeed Brand API
+  version: 1.0.0
+  contact:
+    name: Formfeed support
+    email: support@formfeed.dev
+    url: https://formfeed.dev
+  termsOfService: https://formfeed.dev/legal/terms
+  description: 'Operations tagged Brand across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api-eu.formfeed.dev/v1
+  description: EU (Frankfurt), where every workspace renders and stores today
+- url: https://api.formfeed.dev/v1
+  description: Routes to the workspace's region
+- url: https://api-us.formfeed.dev/v1
+  description: Reserved for a US region, which is not open yet
+security:
+- bearerAuth: []
+tags:
+- name: Brand
+  description: 'The organisation''s brand kit: colours, fonts, logos and legal footer every template sees as `brand`.'
+paths:
+  /brand:
+    get:
+      tags:
+      - Brand
+      operationId: getBrand
+      summary: Get the brand kit
+      description: 'The organisation''s brand kit as templates see it in the `brand` variable (`brand.colors.primary`,
+
+        `brand.logo.primary`, `brand.legal_footer`), plus the page defaults new templates start from.
+
+        Every API render uses the current kit, and the assembled document carries its values as CSS
+
+        variables (`--brand-color-primary`, `--brand-font-heading`, `--brand-font-size`). Unset values are
+
+        `null`. The kit is edited in the app; `formfeed brand pull` stores it for local previews.
+
+        Needs `template:read`.'
+      responses:
+        '200':
+          description: Brand kit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+components:
+  schemas:
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    Brand:
+      type: object
+      required:
+      - version
+      - name
+      - colors
+      - fonts
+      - font_size
+      - logo
+      - legal_footer
+      - page_defaults
+      properties:
+        version:
+          type: integer
+          example: 7
+          description: Grows with every change of the kit; renders record the version they used.
+        name:
+          type:
+          - string
+          - 'null'
+          example: Fennlor Studio GmbH
+        colors:
+          type: object
+          additionalProperties:
+            type: string
+            example: '#0f766e'
+          description: Token → hex colour, e.g. `primary`, `accent`. Always an object.
+          example:
+            primary: '#0f766e'
+            accent: '#f59e0b'
+        fonts:
+          type: object
+          properties:
+            heading:
+              type:
+              - string
+              - 'null'
+              example: Inter
+            body:
+              type:
+              - string
+              - 'null'
+              example: Source Serif 4
+        font_size:
+          type:
+          - string
+          - 'null'
+          example: 10pt
+        logo:
+          type: object
+          description: CDN URLs of the logos, served without a signature; a new logo gets a new URL.
+          properties:
+            primary:
+              type:
+              - string
+              - 'null'
+              format: uri
+            inverse:
+              type:
+              - string
+              - 'null'
+              format: uri
+            mark:
+              type:
+              - string
+              - 'null'
+              format: uri
+        legal_footer:
+          type:
+          - string
+          - 'null'
+        page_defaults:
+          type: object
+          description: Paper and margins new templates start from in the app; renders do not apply them. `{}` when unset.
+          properties:
+            paper:
+              type: object
+              properties:
+                format:
+                  type: string
+                  example: A4
+                landscape:
+                  type: boolean
+            margin:
+              type: object
+              properties:
+                top:
+                  type: string
+                  example: 20mm
+                right:
+                  type: string
+                  example: 15mm
+                bottom:
+                  type: string
+                  example: 20mm
+                left:
+                  type: string
+                  example: 15mm
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+  responses:
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: 'API key from the workspace: `ff_live_…` or `ff_test_…`. Also accepted in the `X-API-Key` header.'
+externalDocs:
+  description: Guides, SDKs and the CLI
+  url: https://docs.formfeed.dev
+x-refined-from:
+- api_formfeed.json
+- formfeed-openapi.json

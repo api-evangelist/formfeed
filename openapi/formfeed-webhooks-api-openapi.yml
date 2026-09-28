@@ -1,0 +1,490 @@
+openapi: 3.2.0
+info:
+  title: Formfeed Webhooks API
+  version: 1.0.0
+  contact:
+    name: Formfeed support
+    email: support@formfeed.dev
+    url: https://formfeed.dev
+  termsOfService: https://formfeed.dev/legal/terms
+  description: 'Operations tagged Webhooks across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api-eu.formfeed.dev/v1
+  description: EU (Frankfurt), where every workspace renders and stores today
+- url: https://api.formfeed.dev/v1
+  description: Routes to the workspace's region
+- url: https://api-us.formfeed.dev/v1
+  description: Reserved for a US region, which is not open yet
+security:
+- bearerAuth: []
+tags:
+- name: Webhooks
+  description: Event delivery to your endpoints.
+paths:
+  /webhooks:
+    get:
+      tags:
+      - Webhooks
+      operationId: listWebhooks
+      summary: List webhook endpoints
+      responses:
+        '200':
+          description: Endpoints.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WebhookEndpoint'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      tags:
+      - Webhooks
+      operationId: createWebhook
+      summary: Create a webhook endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEndpointCreate'
+      responses:
+        '201':
+          description: Created. The `secret` is returned once.
+          headers:
+            Location:
+              description: Absolute URL of the new endpoint, for `DELETE /webhooks/{id}`.
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpoint'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /webhooks/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        example: whk_01J8ZK4M3Q
+    put:
+      tags:
+      - Webhooks
+      operationId: updateWebhook
+      summary: Update a webhook endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEndpointCreate'
+      responses:
+        '200':
+          description: Updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpoint'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags:
+      - Webhooks
+      operationId: deleteWebhook
+      summary: Delete a webhook endpoint
+      responses:
+        '204':
+          description: Deleted.
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /webhooks/{id}/test:
+    post:
+      tags:
+      - Webhooks
+      operationId: testWebhook
+      summary: Send a test event
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: The test event is queued; the delivery log shows its outcome.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  queued:
+                    type: boolean
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /webhooks/listen:
+    post:
+      tags:
+      - Webhooks
+      operationId: startListenSession
+      summary: Start a listen session
+      description: 'What `formfeed listen` calls: a session that receives the workspace''s webhook events like a registered endpoint and relays them over a WebSocket to the CLI, which forwards them to a local server. Deliveries are signed with the session''s `secret`. Test-environment events only, unless `live` is set, which needs `webhook:manage`. The `websocket_url` is valid for 60 seconds; the session lives while a CLI is connected. At most three sessions per workspace; a new session of the same key or member ends its previous one. Needs `webhook:listen`.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - render.completed
+                    - render.failed
+                    - job.completed
+                    - job.failed
+                    - quota.warning
+                    - quota.exceeded
+                    - storage.delivered
+                    - storage.failed
+                live:
+                  type: boolean
+                  default: false
+      responses:
+        '201':
+          description: The session.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  secret:
+                    type: string
+                    example: whsec_3f9c0b
+                  events:
+                    type: array
+                    items:
+                      type: string
+                  environments:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                      - live
+                      - test
+                  expires_at:
+                    type: string
+                    format: date-time
+                  websocket_url:
+                    type: string
+                    format: uri
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /webhooks/listen/{id}:
+    delete:
+      tags:
+      - Webhooks
+      operationId: endListenSession
+      summary: End a listen session
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Ended.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /webhooks/events/{id}/resend:
+    post:
+      tags:
+      - Webhooks
+      operationId: resendWebhookEvent
+      summary: Send an event again
+      description: Sends a stored event (`evt_…`, delivered or not) again as a new delivery to a registered endpoint (`webhook:manage`) or a running listen session (`webhook:listen`).
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: evt_4f0c2b
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - endpoint_id
+              properties:
+                endpoint_id:
+                  type: string
+                  format: uuid
+                  description: A registered endpoint or a listen session.
+      responses:
+        '202':
+          description: The delivery is queued.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  delivery_id:
+                    type: string
+                  event_id:
+                    type: string
+                  event:
+                    type: string
+                  endpoint_id:
+                    type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '410':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+components:
+  responses:
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    WebhookEndpoint:
+      allOf:
+      - $ref: '#/components/schemas/WebhookEndpointCreate'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: whk_01J8ZK4M3Q
+          secret:
+            type: string
+            description: Only returned on creation.
+          created_at:
+            type: string
+            format: date-time
+    WebhookEndpointCreate:
+      type: object
+      required:
+      - url
+      - events
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+            - render.completed
+            - render.failed
+            - job.completed
+            - job.failed
+            - quota.warning
+            - quota.exceeded
+            - storage.delivered
+            - storage.failed
+        environments:
+          type: array
+          description: Render environments whose events the endpoint receives; both by default. Quota events are sent regardless.
+          items:
+            type: string
+            enum:
+            - live
+            - test
+          default:
+          - live
+          - test
+        description:
+          type: string
+        enabled:
+          type: boolean
+          default: true
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: 'API key from the workspace: `ff_live_…` or `ff_test_…`. Also accepted in the `X-API-Key` header.'
+externalDocs:
+  description: Guides, SDKs and the CLI
+  url: https://docs.formfeed.dev
+x-refined-from:
+- api_formfeed.json
+- formfeed-openapi.json

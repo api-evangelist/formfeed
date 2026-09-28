@@ -1,0 +1,1244 @@
+openapi: 3.2.0
+info:
+  title: Formfeed Renders API
+  version: 1.0.0
+  contact:
+    name: Formfeed support
+    email: support@formfeed.dev
+    url: https://formfeed.dev
+  termsOfService: https://formfeed.dev/legal/terms
+  description: 'Operations tagged Renders across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api-eu.formfeed.dev/v1
+  description: EU (Frankfurt), where every workspace renders and stores today
+- url: https://api.formfeed.dev/v1
+  description: Routes to the workspace's region
+- url: https://api-us.formfeed.dev/v1
+  description: Reserved for a US region, which is not open yet
+security:
+- bearerAuth: []
+tags:
+- name: Renders
+  description: Render PDFs and images from templates, HTML or URLs.
+paths:
+  /renders:
+    post:
+      tags:
+      - Renders
+      operationId: createRender
+      summary: Create a render
+      description: Renders a PDF or image from a stored template, ad-hoc HTML or a URL. Synchronous by default; set `mode` to `async` to receive a `202` and a webhook.
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: output
+        in: query
+        description: Set to `binary` to receive the file instead of JSON.
+        schema:
+          type: string
+          enum:
+          - json
+          - binary
+          default: json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenderRequest'
+            examples:
+              template:
+                summary: From a template
+                value:
+                  template: invoice-de
+                  data:
+                    invoice:
+                      number: 2026-0042
+                  output: pdf
+              html:
+                summary: Ad-hoc HTML
+                value:
+                  html: <h1>Hello {{ name }}</h1>
+                  engine: liquid
+                  data:
+                    name: World
+                  output: png
+                  settings:
+                    image:
+                      width: 1200
+                      height: 630
+              url:
+                summary: URL to PDF
+                value:
+                  url: https://example.com/report
+                  output: pdf
+                  settings:
+                    paper:
+                      format: A4
+      responses:
+        '200':
+          description: Render succeeded (sync).
+          headers:
+            RateLimit-Limit:
+              schema:
+                type: integer
+              description: Requests per second allowed for the plan.
+            RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Requests left in the current window.
+            RateLimit-Reset:
+              schema:
+                type: integer
+              description: Seconds until the bucket is full again.
+            X-Units-Charged:
+              schema:
+                type: number
+              description: Units metered for this render.
+            X-Units-Remaining:
+              schema:
+                type: number
+            X-Render-Region:
+              schema:
+                type: string
+                enum:
+                - eu
+                - us
+                - apac
+            X-Render-Engine:
+              schema:
+                type: string
+            X-Render-Deduplicated:
+              schema:
+                type: boolean
+              description: '`true` when an identical request was served from the dedup cache at zero units.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Render'
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '202':
+          description: 'Render queued: either `mode: async` was requested, or a synchronous render outlived the 60 second deadline and was handed to the background.'
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: URL of the render's result (`GET /renders/{id}/result`, with `output=binary` when the request asked for the file), which answers `202` until the render has finished.
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait before asking `Location` again.
+            X-Render-Async-Fallback:
+              schema:
+                type: boolean
+              description: '`true` when a synchronous request fell back to async.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Render'
+        '402':
+          $ref: '#/components/responses/QuotaExceeded'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      tags:
+      - Renders
+      operationId: listRenders
+      summary: List renders
+      parameters:
+      - name: template
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          $ref: '#/components/schemas/RenderStatus'
+      - name: environment
+        in: query
+        schema:
+          type: string
+          enum:
+          - live
+          - test
+      - name: since
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - name: until
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Page of renders.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Render'
+                  next_cursor:
+                    type:
+                    - string
+                    - 'null'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /renders/{id}:
+    get:
+      tags:
+      - Renders
+      operationId: getRender
+      summary: Get a render
+      parameters:
+      - $ref: '#/components/parameters/RenderId'
+      responses:
+        '200':
+          description: Render.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Render'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /renders/{id}/result:
+    get:
+      tags:
+      - Renders
+      operationId: getRenderResult
+      summary: Wait for the result of a render
+      description: 'The URL in the `Location` of a `202` from `POST /renders`. While the render is queued or rendering, the answer is `202` with the render, the same `Location` and a `Retry-After`. Once it has finished, the answer is what the synchronous request would have returned: the render, the file with `output=binary`, or the render''s error as a problem with its `render_id`. Clients that follow a `202` on their own, such as Power Automate and Logic Apps, therefore wait for the document. The SDKs wait by polling `GET /renders/{id}` instead.'
+      parameters:
+      - $ref: '#/components/parameters/RenderId'
+      - name: output
+        in: query
+        description: Set to `binary` to receive the file instead of JSON.
+        schema:
+          type: string
+          enum:
+          - json
+          - binary
+          default: json
+      responses:
+        '200':
+          description: The render has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Render'
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '202':
+          description: The render is still queued or rendering.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+              description: This URL again.
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait before asking again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Render'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /renders/{id}/input:
+    get:
+      tags:
+      - Renders
+      operationId: getRenderInput
+      summary: Get the request of a render
+      description: 'The stored request of a render, as what renders it again: the template and version (or the HTML and engine, or the URL), the data, the locale and the options. Requests are kept only when the workspace turns on "Keep render requests" (off by default; 24 hours from Starter, 7 days from Pro); otherwise, and after the period, the answer is 410 `render_input_expired`. Passwords are never kept. Needs the `render:input` scope, which new keys do not have by default; every read is written to the audit log.'
+      parameters:
+      - $ref: '#/components/parameters/RenderId'
+      responses:
+        '200':
+          description: The stored request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RenderInput'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '410':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /renders/{id}/outputs:
+    delete:
+      tags:
+      - Renders
+      operationId: deleteRenderOutputs
+      summary: Delete stored outputs of a render
+      parameters:
+      - $ref: '#/components/parameters/RenderId'
+      responses:
+        '204':
+          description: Outputs deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /renders/batch:
+    post:
+      tags:
+      - Renders
+      operationId: createBatch
+      summary: Create a batch of renders
+      description: Up to 1 000 renders in one job. Always asynchronous. Optional zip of all outputs.
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - items
+              properties:
+                template:
+                  type: string
+                  description: Default template for all items.
+                canary_key:
+                  type: string
+                  maxLength: 200
+                  description: Default `canary_key` for all items. Without one, every item of the batch lands on the same version of a channel with a canary.
+                output:
+                  allOf:
+                  - $ref: '#/components/schemas/OutputFormat'
+                  description: Default `output` for all items; an item's own `output` wins. Without either, each item's template decides.
+                items:
+                  type: array
+                  maxItems: 1000
+                  items:
+                    $ref: '#/components/schemas/RenderRequest'
+                zip:
+                  type: boolean
+                  default: false
+                webhook_url:
+                  type:
+                  - string
+                  - 'null'
+                  format: uri
+                webhook_secret:
+                  type:
+                  - string
+                  - 'null'
+                  minLength: 16
+                  maxLength: 200
+                  description: Signs the deliveries to `webhook_url` (same scheme as an endpoint secret). Write-only, never returned; without it those deliveries stay unsigned.
+                meta:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '202':
+          description: Job queued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /jobs/{id}:
+    get:
+      tags:
+      - Renders
+      operationId: getJob
+      summary: Get a batch job
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: job_01J8ZK4M3Q
+      responses:
+        '200':
+          description: Job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+components:
+  schemas:
+    OutputFormat:
+      type: string
+      enum:
+      - pdf
+      - png
+      - jpg
+      - webp
+      - docx
+      - pptx
+      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          example: job_01J8ZK4M3Q
+        status:
+          type: string
+          enum:
+          - queued
+          - processing
+          - completed
+          - partially_failed
+          - failed
+        total:
+          type: integer
+        succeeded:
+          type: integer
+        failed:
+          type: integer
+        zip_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        storage:
+          allOf:
+          - $ref: '#/components/schemas/StorageDelivery'
+          description: The zip's copy in the workspace's own bucket; each item carries its own.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Render'
+        meta:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    Engine:
+      type: string
+      enum:
+      - jinja2
+      - liquid
+      - handlebars
+    StorageOption:
+      description: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is
+
+        copied under the connection''s key template. `false` leaves this document out. `key` names its
+
+        object below the connection''s prefix instead of the key template: relative, without `.` or `..`
+
+        segments, at most 1024 bytes; an existing object is overwritten. A render with its own key is
+
+        never answered from the dedup cache, and one without a connection answers 409
+
+        `storage_not_configured`. In a batch, each item carries its own.
+
+        '
+      oneOf:
+      - type: boolean
+        enum:
+        - false
+      - type: object
+        additionalProperties: false
+        properties:
+          key:
+            type: string
+            maxLength: 1024
+            example: invoices/2026/RE-1001.pdf
+    RenderStatus:
+      type: string
+      enum:
+      - queued
+      - rendering
+      - succeeded
+      - failed
+    RenderInput:
+      type: object
+      description: The stored request of a render, as `GET /renders/{id}/input` returns it. Fields that do not apply are left out.
+      properties:
+        render_id:
+          type: string
+          example: rnd_01J8ZK4M3Q7X
+        template:
+          type: object
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            version:
+              type: integer
+            channel:
+              type: string
+        html:
+          type: string
+          description: Ad-hoc HTML renders.
+        engine:
+          $ref: '#/components/schemas/Engine'
+        url:
+          type: string
+          format: uri
+          description: URL renders.
+        data:
+          type: object
+          additionalProperties: true
+        locale:
+          type: string
+        output:
+          $ref: '#/components/schemas/OutputFormat'
+        settings:
+          type: object
+          additionalProperties: true
+        filename:
+          type: string
+        post:
+          type: object
+          additionalProperties: true
+          description: Post-processing without passwords.
+        meta:
+          type: object
+          additionalProperties: true
+        environment:
+          type: string
+          enum:
+          - live
+          - test
+        created_at:
+          type: string
+          format: date-time
+    Region:
+      type: string
+      enum:
+      - eu
+      - us
+      - apac
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    Render:
+      type: object
+      required:
+      - id
+      - status
+      - output
+      - region
+      - created_at
+      properties:
+        id:
+          type: string
+          example: rnd_01J8ZK4M3Q7X
+        status:
+          $ref: '#/components/schemas/RenderStatus'
+        output:
+          $ref: '#/components/schemas/OutputFormat'
+        download_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        bytes:
+          type:
+          - integer
+          - 'null'
+        page_count:
+          type:
+          - integer
+          - 'null'
+        units:
+          type: number
+          example: 1
+        region:
+          $ref: '#/components/schemas/Region'
+        environment:
+          type: string
+          enum:
+          - live
+          - test
+        template:
+          type:
+          - object
+          - 'null'
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            version:
+              type: integer
+            channel:
+              type:
+              - string
+              - 'null'
+              description: The release channel the version came from (`published` by default); null when the request named a version number or `latest`.
+            canary:
+              type: boolean
+              description: True when the channel's canary share picked this version.
+        engine_version:
+          type: string
+          description: Chromium build and engine package version, for reproducibility.
+          example: chromium-140.0.7339.16/engine-1.4.0
+        template_checksum:
+          type:
+          - string
+          - 'null'
+        output_sha256:
+          type:
+          - string
+          - 'null'
+        deduplicated:
+          type: boolean
+        storage:
+          allOf:
+          - $ref: '#/components/schemas/StorageDelivery'
+        timings:
+          type: object
+          properties:
+            queue_ms:
+              type: integer
+            compile_ms:
+              type: integer
+            render_ms:
+              type: integer
+            upload_ms:
+              type: integer
+            total_ms:
+              type: integer
+        error:
+          allOf:
+          - $ref: '#/components/schemas/Problem'
+        meta:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    RenderRequest:
+      type: object
+      properties:
+        template:
+          type: string
+          description: Template id or slug. Omit when using `html` or `url`.
+          example: invoice-de
+        version:
+          type: string
+          description: '`published` (default), the name of a release channel such as `staging`, `latest` (the draft the editor works on, test keys only) or a version number. Channels, `published` included, are cached for up to a minute; a channel with a canary sends its share of renders to the canary version, chosen by the Idempotency-Key so a retry lands on the same version. A draft renders as it is at that moment.'
+          default: published
+        html:
+          type:
+          - string
+          - 'null'
+          description: Ad-hoc HTML, max 5 MB.
+        url:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: Public URL to render.
+        engine:
+          allOf:
+          - $ref: '#/components/schemas/Engine'
+          description: Engine for `html` sources; `null` disables templating.
+        data:
+          type: object
+          additionalProperties: true
+          description: Data bound to the template.
+        output:
+          allOf:
+          - $ref: '#/components/schemas/OutputFormat'
+          description: 'Left out, the template decides: `pdf` for a template of kind `pdf`, `settings.image.format` (the request''s, then the template''s; `png` without one) for kind `image`, `settings.office.output` (else the template''s own format) for kinds `docx` and `pptx`. Ad-hoc `html` and `url` render `pdf`. On the Free plan, test renders of `docx` and `pptx` templates may only request `pdf` (403 `test_output_unavailable`).'
+        settings:
+          $ref: '#/components/schemas/Settings'
+        filename:
+          type: string
+          description: May contain template expressions.
+          example: invoice-{{ invoice.number }}.pdf
+        expires_in:
+          type:
+          - integer
+          - 'null'
+          description: Seconds until the output expires. `null` uses the workspace retention.
+        access:
+          type: string
+          enum:
+          - public
+          - signed
+          default: signed
+        mode:
+          type: string
+          enum:
+          - sync
+          - async
+          default: sync
+        locale:
+          type:
+          - string
+          - 'null'
+          description: Overrides the template locale and selects the i18n dictionary.
+        webhook_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        webhook_secret:
+          type:
+          - string
+          - 'null'
+          minLength: 16
+          maxLength: 200
+          description: Signs the deliveries to `webhook_url` (same scheme as an endpoint secret). Write-only, never returned; without it those deliveries stay unsigned.
+        meta:
+          type: object
+          additionalProperties: true
+          description: Echoed in the response and webhooks.
+        region:
+          allOf:
+          - $ref: '#/components/schemas/Region'
+        dedupe:
+          type: boolean
+          default: true
+          description: Serve identical requests from the dedup cache at zero units.
+        canary_key:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 200
+          example: customer-4711
+          description: 'Decides the canary split of a channel: renders with the same value land on the same version, so one customer''s documents look alike. Use an opaque id; it is not stored. Without it the Idempotency-Key decides, which keeps a retry on its version but splits separate renders independently.'
+        validate_data:
+          type: boolean
+          default: false
+          description: Checks `data` against the template's stored data schema before anything is rendered or counted; a mismatch answers 422 `data_validation_error` listing every error. Needs a template with a stored schema (400 otherwise). In a batch, nothing is queued unless every item that asks for it fits.
+        post:
+          type:
+          - object
+          - 'null'
+          description: 'Post-processing of a PDF render, applied in the order merge, watermark, password (0.5 units
+
+            per step on live keys; Starter plan and above). An unknown step is refused, never skipped.
+
+            '
+          additionalProperties: false
+          properties:
+            merge_after:
+              type: array
+              minItems: 1
+              maxItems: 49
+              items:
+                type: string
+              description: 'PDFs appended after this document, in order: render ids (`rnd_…`) of earlier renders, file ids (`fil_…`) or names of PDFs in the workspace library.'
+            watermark:
+              type: object
+              additionalProperties: false
+              description: Either a text or an image from the workspace library, not both.
+              properties:
+                text:
+                  type: string
+                  maxLength: 200
+                image:
+                  type: string
+                  maxLength: 200
+                  description: 'A library file: its id (`fil_…`) or its name. PNG or JPEG.'
+                opacity:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  default: 0.2
+                rotation:
+                  type: number
+                  default: -45
+                  description: Degrees clockwise as in CSS.
+                color:
+                  type: string
+                  pattern: ^#?[0-9a-fA-F]{6}$
+                  description: Hex colour of the text; ignored for an image.
+            password:
+              type: object
+              additionalProperties: false
+              properties:
+                user:
+                  type: string
+                  maxLength: 127
+                  description: Needed to open the document.
+                owner:
+                  type: string
+                  maxLength: 127
+                  description: Lifts the restrictions; random when omitted.
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - print
+                    - copy
+                    - modify
+                    - annotate
+                  default: []
+        storage:
+          allOf:
+          - $ref: '#/components/schemas/StorageOption'
+    StorageError:
+      type: object
+      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+      properties:
+        code:
+          type: string
+          example: AccessDenied
+        http_status:
+          type:
+          - integer
+          - 'null'
+          example: 403
+        message:
+          type: string
+          example: Access Denied
+    Settings:
+      type: object
+      description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
+      additionalProperties: true
+      properties:
+        paper:
+          type: object
+          properties:
+            format:
+              type: string
+              example: A4
+            width:
+              type:
+              - string
+              - 'null'
+            height:
+              type:
+              - string
+              - 'null'
+            landscape:
+              type: boolean
+              default: false
+        margin:
+          type: object
+          properties:
+            top:
+              type: string
+              example: 20mm
+            right:
+              type: string
+              example: 15mm
+            bottom:
+              type: string
+              example: 20mm
+            left:
+              type: string
+              example: 15mm
+        header:
+          type: object
+          description: Printed across the whole page width inside the top margin.
+          properties:
+            html:
+              type: string
+            height:
+              type: string
+            padding:
+              type: string
+              description: CSS padding inside the header box; `0` for designs that run edge to edge.
+              default: 0 10mm
+        footer:
+          type: object
+          description: Printed across the whole page width inside the bottom margin.
+          properties:
+            html:
+              type: string
+            height:
+              type: string
+            padding:
+              type: string
+              description: CSS padding inside the footer box; `0` for designs that run edge to edge.
+              default: 0 10mm
+        printBackground:
+          type: boolean
+          default: true
+        scale:
+          type: number
+          default: 1
+        image:
+          type: object
+          properties:
+            width:
+              type: integer
+              example: 1200
+            height:
+              type: integer
+              example: 630
+            deviceScaleFactor:
+              type: number
+              default: 2
+            format:
+              type: string
+              enum:
+              - png
+              - jpeg
+              - webp
+              description: Output of an image template when the request names no `output`. `jpg` is accepted as well.
+            quality:
+              type: integer
+              minimum: 1
+              maximum: 100
+            fullPage:
+              type: boolean
+              default: false
+            transparent:
+              type: boolean
+              default: false
+        office:
+          type: object
+          description: Word and PowerPoint templates. Page setup, margins, headers and footers come from the document; the Chromium settings above do not apply.
+          properties:
+            output:
+              type: string
+              enum:
+              - docx
+              - pptx
+              - pdf
+              description: Output when the request names none; the template's own format without it.
+        locale:
+          type: string
+          example: de-DE
+        timezone:
+          type: string
+          example: Europe/Berlin
+        currency:
+          type: string
+          example: EUR
+    StorageDelivery:
+      type: object
+      description: 'The output''s copy in the workspace''s own bucket; null when none applies (no connection, a
+
+        paused one, `storage: false`, a test render the connection does not take). A synchronous
+
+        response reports `pending`: the copy is made in the background, and `storage.delivered` or
+
+        `storage.failed` follow as webhook events.
+
+        '
+      properties:
+        status:
+          type: string
+          enum:
+          - pending
+          - delivered
+          - failed
+        bucket:
+          type: string
+          example: fennlor-docs
+        key:
+          type: string
+          example: formfeed/2026/09/rnd_7da09ab6cd9946b798c187c2a9350852/invoice.pdf
+        url:
+          type:
+          - string
+          - 'null'
+          description: The object below the connection's `public_base_url`; null without one.
+        reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - permanent
+          - rejected
+          - exhausted
+          - source_gone
+          - connection_deleted
+          - connection_paused
+          - plan
+          - workspace_deleted
+          description: 'Why a delivery failed: the credentials or bucket (`permanent`), the object (`rejected`), retries used up (`exhausted`), the output expired first (`source_gone`), or the connection went away.'
+        error:
+          allOf:
+          - $ref: '#/components/schemas/StorageError'
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+    RenderId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        example: rnd_01J8ZK4M3Q7X
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Unique key per logical request; replays within 24 h return the original response.
+      schema:
+        type: string
+        maxLength: 128
+  responses:
+    QuotaExceeded:
+      description: Monthly units exhausted and no overage available.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    RateLimited:
+      description: Rate limit exceeded.
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+        RateLimit-Limit:
+          schema:
+            type: integer
+        RateLimit-Remaining:
+          schema:
+            type: integer
+        RateLimit-Reset:
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Unprocessable:
+      description: Validation, template or data error. Template errors include `location`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: 'API key from the workspace: `ff_live_…` or `ff_test_…`. Also accepted in the `X-API-Key` header.'
+externalDocs:
+  description: Guides, SDKs and the CLI
+  url: https://docs.formfeed.dev
+x-refined-from:
+- api_formfeed.json
+- formfeed-openapi.json

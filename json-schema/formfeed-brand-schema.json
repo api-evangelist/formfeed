@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/formfeed/main/json-schema/formfeed-brand-schema.json",
+  "title": "Brand",
+  "x-generated": "2026-09-28",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/formfeed-openapi.json#/components/schemas/Brand",
+  "type": "object",
+  "required": [
+    "version",
+    "name",
+    "colors",
+    "fonts",
+    "font_size",
+    "logo",
+    "legal_footer",
+    "page_defaults"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "description": "Grows with every change of the kit; renders record the version they used."
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "colors": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Token → hex colour, e.g. `primary`, `accent`. Always an object."
+    },
+    "fonts": {
+      "type": "object",
+      "properties": {
+        "heading": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "body": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "font_size": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "logo": {
+      "type": "object",
+      "description": "CDN URLs of the logos, served without a signature; a new logo gets a new URL.",
+      "properties": {
+        "primary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "inverse": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "mark": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    },
+    "legal_footer": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "page_defaults": {
+      "type": "object",
+      "description": "Paper and margins new templates start from in the app; renders do not apply them. `{}` when unset.",
+      "properties": {
+        "paper": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "type": "string"
+            },
+            "landscape": {
+              "type": "boolean"
+            }
+          }
+        },
+        "margin": {
+          "type": "object",
+          "properties": {
+            "top": {
+              "type": "string"
+            },
+            "right": {
+              "type": "string"
+            },
+            "bottom": {
+              "type": "string"
+            },
+            "left": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

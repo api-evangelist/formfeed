@@ -1,0 +1,140 @@
+# Formfeed documentation
+
+> Formfeed renders PDFs and images from HTML templates written in Jinja2, Liquid or Handlebars and
+> JSON data, and fills Word and PowerPoint files that carry the same tags. Hosted in the EU
+> (Frankfurt), priced in EUR. It has a browser editor, a CLI for templates as files, SDKs for
+> TypeScript and Python, and an MCP server for AI agents.
+
+The API reference is left out of both files: it is generated from the OpenAPI document, and that
+document is the better machine-readable source: https://api-eu.formfeed.dev/v1/openapi.json
+
+## Start here
+
+- [Formfeed documentation](https://docs.formfeed.dev/): Formfeed turns an HTML template and a JSON payload into a PDF or an image. One REST call, three template languages, EU hosting.
+
+## Getting started
+
+- [Quickstart](https://docs.formfeed.dev/getting-started/quickstart): Render your first PDF with curl, TypeScript or Python in five minutes, then turn it into a reusable template.
+- [Templates as code](https://docs.formfeed.dev/getting-started/templates-as-code): Keep templates in your repository, preview them locally with hot reload, test them, and publish from CI.
+- [Core concepts](https://docs.formfeed.dev/getting-started/concepts): Organisations, workspaces, templates and versions, renders and jobs, API keys, units and regions, and how they fit together.
+- [Editor tour](https://docs.formfeed.dev/getting-started/editor-tour): The web editor in two minutes, with every keyboard shortcut.
+- [Two-factor authentication](https://docs.formfeed.dev/getting-started/two-factor-authentication): Protect your Formfeed account with a code from an authenticator app, what changes when it is on, and what to do when the phone is gone.
+
+## Templates
+
+- [Template languages](https://docs.formfeed.dev/templates/languages): Jinja2-compatible, Liquid and Handlebars side by side, with the same invoice in all three, and how to choose.
+- [Writing templates](https://docs.formfeed.dev/templates/writing-templates): How a template becomes a document: data, page setup, page breaks, headers and footers with page numbers, fonts, images, Tailwind, charts, JavaScript, localisation and limits.
+- [Word and PowerPoint templates](https://docs.formfeed.dev/templates/office-templates): Fill your own Word or PowerPoint file with data: tags in the document text, loops over paragraphs and table rows, codes and pictures, the office template page, outputs, fonts, limits and plans.
+- [Settings reference](https://docs.formfeed.dev/templates/settings): Every template setting with its type and default, and how request settings merge over template settings.
+- [Building blocks](https://docs.formfeed.dev/templates/building-blocks): Insert ready-made blocks into a template in the editor, such as an invoice table, payment terms or a DIN 5008 address field, together with their sample data, CSS and translations.
+- [Brand kit](https://docs.formfeed.dev/templates/brand-kit): Set logo, colours, fonts and legal footer once for the organisation and use them in every template through the brand variable and CSS variables.
+- [Shared partials](https://docs.formfeed.dev/templates/shared-partials): Write a letterhead or legal footer once for the organisation and include it by name in every template; how shared partials resolve, change and sync with the CLI.
+- [Typed template data](https://docs.formfeed.dev/templates/typed-data): Generate TypeScript and Python types for the data of your templates with formfeed types, check them in CI, and store a data schema as a contract so types and the publish check have something to rely on.
+- [Release channels](https://docs.formfeed.dev/templates/release-channels): Point named channels such as staging at template versions, render a channel, roll out a canary, promote and roll back without a code deploy, and how the schema check guards every move.
+- [Reproduce a failed render](https://docs.formfeed.dev/templates/reproduce-a-failed-render): Keep render requests for a while, pull a production render's data into your project with formfeed renders pull, run it locally, turn it into a test, and handle the personal data it contains.
+- [Helper reference](https://docs.formfeed.dev/templates/helpers): Every helper of the template engine with its signature, description and the same call written for Jinja2, Liquid and Handlebars.
+- [Batch from a spreadsheet](https://docs.formfeed.dev/templates/batch-from-spreadsheet): Render one document per row of a CSV or Excel file from the app, no code needed.
+
+## API
+
+- [API overview](https://docs.formfeed.dev/api/overview): Base URL, authentication, request and response conventions, pagination, idempotency, versioning, and a map of every endpoint.
+- [TypeScript SDK](https://docs.formfeed.dev/api/sdks/typescript): @formfeed/sdk for Node, Deno, Bun, Cloudflare Workers and browsers: renders, batches, templates, webhooks, usage, retries and typed errors.
+- [Authentication](https://docs.formfeed.dev/api/authentication): API keys, test and live environments, scopes, key handling and rotation, and how the CLI logs in.
+- [Python SDK](https://docs.formfeed.dev/api/sdks/python): formfeed on PyPI: sync and asyncio clients, renders, batches, templates, webhooks, usage, retries and typed errors.
+- [Rendering](https://docs.formfeed.dev/api/rendering): POST /v1/renders in depth: the three sources, output formats, settings overrides, file names, locales, download links and retention, sync and async, deduplication and reproducibility.
+- [Async and batch](https://docs.formfeed.dev/api/async-and-batch): Queue long renders, process up to 1,000 documents in one job, get a zip, and learn about results through webhooks or polling.
+- [apitemplate.io compatibility endpoints](https://docs.formfeed.dev/api/compat-apitemplate): Keep your apitemplate.io integration running while you migrate; four endpoints with their request and response shapes.
+- [Data residency](https://docs.formfeed.dev/api/data-residency): Where Formfeed processes and stores your data, what leaves the EU, and how to keep it that way.
+- [PDF tools](https://docs.formfeed.dev/api/pdf-tools): Merge, password-protect, watermark and inspect PDFs, and convert office documents to PDF: the post block of a render and the /pdf endpoints, what they cost, the order of the steps and the errors they return.
+- [Webhooks](https://docs.formfeed.dev/api/webhooks): Events, payloads, signature verification in Node, Python and any language, retries, and how to build a reliable handler.
+- [Develop webhooks locally](https://docs.formfeed.dev/api/develop-webhooks-locally): Forward your workspace's webhook events to a server on your machine with formfeed listen, verify them with the session secret, send events again and trigger real ones.
+- [Templates API](https://docs.formfeed.dev/api/templates): Create templates, add and publish versions, detect conflicts with base_checksum, check data schemas before publishing, manage release channels, and read data schemas from code.
+- [Limits and usage](https://docs.formfeed.dev/api/limits-and-usage): Rate limits, concurrency, page and size limits per plan, how units are counted, quota behaviour, and reading usage from the API.
+- [Errors](https://docs.formfeed.dev/api/errors): The problem format every error uses, how to handle errors in code, and every error code with a page that explains the fix.
+- [Brand and partials](https://docs.formfeed.dev/api/brand-and-partials): Read the organisation's brand kit with GET /brand and manage shared partials with the partials endpoints, including conflict detection with base_version.
+- [Bring your own storage](https://docs.formfeed.dev/api/bring-your-own-storage): Copy every document into your own Amazon S3, Cloudflare R2 or S3-compatible bucket: connecting a bucket, minimal permissions per provider, object keys, the storage option of a request, retries and pausing, redelivery, the storage events and the storage field.
+- [Files](https://docs.formfeed.dev/api/files): Upload the images and PDFs your templates use to the workspace file library, reference them by name with asset(), and use them as PDF watermarks and merge sources.
+
+## Errors
+
+- [invalid_request](https://docs.formfeed.dev/errors/invalid-request): HTTP 400 Invalid request. The request could not be understood: the body is not valid JSON, a field has the wrong type or value, or a combination of fields is not allowed.
+- [unauthorized](https://docs.formfeed.dev/errors/unauthorized): HTTP 401 Unauthorized. The request carries no API key, or the key is not valid.
+- [forbidden](https://docs.formfeed.dev/errors/forbidden): HTTP 403 Forbidden. The key is valid but lacks the scope this endpoint needs, or the plan does not include the feature.
+- [not_found](https://docs.formfeed.dev/errors/not-found): HTTP 404 Not found. The render, job, webhook endpoint or path does not exist in this workspace.
+- [template_not_found](https://docs.formfeed.dev/errors/template-not-found): HTTP 404 Template not found. No template with this slug or id has a published version in the workspace of the key.
+- [conflict](https://docs.formfeed.dev/errors/conflict): HTTP 409 Conflict. The request conflicts with the current state: a slug is taken, or the template changed since the version you based your change on.
+- [quota_exceeded](https://docs.formfeed.dev/errors/quota-exceeded): HTTP 402 Quota exceeded. The units of the current period are used up and this plan cannot continue with overage.
+- [template_syntax_error](https://docs.formfeed.dev/errors/template-syntax): HTTP 422 Template syntax error. The template could not be compiled: a tag is not closed, a bracket is missing, or the syntax belongs to another template language.
+- [template_runtime_error](https://docs.formfeed.dev/errors/template-runtime): HTTP 422 Template runtime error. The template compiled, but failed while it ran with your data.
+- [data_validation_error](https://docs.formfeed.dev/errors/data-validation): HTTP 422 Data validation failed. The data does not match the template's data schema.
+- [navigation_failed](https://docs.formfeed.dev/errors/navigation-failed): HTTP 422 Navigation failed. A `url` render could not load the page.
+- [page_limit_exceeded](https://docs.formfeed.dev/errors/page-limit): HTTP 422 Page limit exceeded. The PDF has more pages than the plan allows for one document.
+- [output_too_large](https://docs.formfeed.dev/errors/output-too-large): HTTP 422 Output too large. The rendered file, or the HTML that produces it, is larger than the limit.
+- [rate_limited](https://docs.formfeed.dev/errors/rate-limited): HTTP 429 Rate limited. The workspace sent more requests that start work than the plan allows per second.
+- [worker_exhausted](https://docs.formfeed.dev/errors/worker-exhausted): HTTP 500 Render retries exhausted. The render failed for a reason on Formfeed's side and the retries did not help, or an unexpected error occurred.
+- [region_unavailable](https://docs.formfeed.dev/errors/region-unavailable): HTTP 503 Region unavailable. The requested region cannot take the render right now, or does not exist yet.
+- [render_timeout](https://docs.formfeed.dev/errors/render-timeout): HTTP 504 Render timed out. The render took longer than allowed: the template step is limited to 5 seconds, printing in Chromium to 30 seconds.
+- [not_implemented](https://docs.formfeed.dev/errors/not-implemented): HTTP 501 Not implemented yet. The endpoint or option is part of the API contract but not available yet.
+- [source_not_found](https://docs.formfeed.dev/errors/source-not-found): HTTP 422 Source not found. A PDF tool or a `post.merge_after` entry names a render whose output cannot be found.
+- [source_invalid](https://docs.formfeed.dev/errors/source-invalid): HTTP 422 Source cannot be processed. A PDF tool or a `post.merge_after` entry names a render that is not a finished PDF.
+- [source_encrypted](https://docs.formfeed.dev/errors/source-encrypted): HTTP 422 Source is encrypted. The PDF is password-protected, so it can no longer be merged or watermarked.
+- [tool_failed](https://docs.formfeed.dev/errors/tool-failed): HTTP 500 PDF tool failed. Merging, protecting or watermarking failed while processing the PDF.
+- [file_too_large](https://docs.formfeed.dev/errors/file-too-large): HTTP 413 File too large. The file you uploaded is over the limit: 10 MB for the workspace library, 20 MB for an office document to convert or a Word or PowerPoint template.
+- [schema_breaking_change](https://docs.formfeed.dev/errors/schema-breaking-change): HTTP 409 Schema change breaks callers. Publishing, moving a channel, promoting or rolling back would put a version live whose stored data schema breaks callers of the current one.
+- [channel_not_found](https://docs.formfeed.dev/errors/channel-not-found): HTTP 404 Channel not found. The request names a release channel the template does not have.
+- [channel_name_invalid](https://docs.formfeed.dev/errors/channel-name-invalid): HTTP 422 Invalid channel name. A release channel name is malformed or reserved.
+- [channel_in_use](https://docs.formfeed.dev/errors/channel-in-use): HTTP 409 Channel in use. A release channel cannot be deleted because renders of the last hour used it.
+- [render_input_expired](https://docs.formfeed.dev/errors/render-input-expired): HTTP 410 Render request not kept. The request of a render was not stored, or its retention period ended.
+- [listen_session_limit](https://docs.formfeed.dev/errors/listen-session-limit): HTTP 409 Too many listen sessions. Three formfeed listen sessions are already running in the workspace.
+- [listen_session_ended](https://docs.formfeed.dev/errors/listen-session-ended): HTTP 410 Listen session ended. A delivery, a resend or a connection named a formfeed listen session that is gone.
+- [last_workspace](https://docs.formfeed.dev/errors/last-workspace): HTTP 409 Last workspace. The workspace cannot be deleted because the organisation has no other one.
+- [file_type_unsupported](https://docs.formfeed.dev/errors/file-type-unsupported): HTTP 415 File type not supported. The uploaded file is not an office document Formfeed converts, or it contains macros.
+- [office_document_invalid](https://docs.formfeed.dev/errors/office-document-invalid): HTTP 422 Office document invalid. The file looks like an office document but its container is damaged or fails a safety check.
+- [office_document_too_large](https://docs.formfeed.dev/errors/office-document-too-large): HTTP 422 Office document too large. The document unpacks to more than Formfeed processes.
+- [office_conversion_failed](https://docs.formfeed.dev/errors/office-conversion-failed): HTTP 422 Office conversion failed. LibreOffice could not convert the document, twice in a row.
+- [office_unavailable](https://docs.formfeed.dev/errors/office-unavailable): HTTP 503 Office conversion unavailable. The converter is busy or not reachable right now.
+- [test_output_unavailable](https://docs.formfeed.dev/errors/test-output-unavailable): HTTP 403 Output not available for test renders. On the Free plan, test renders of Word and PowerPoint templates produce the marked PDF only.
+- [unsupported_in_office](https://docs.formfeed.dev/errors/unsupported-in-office): HTTP 422 Not supported in office templates. A Word or PowerPoint template uses a tag that office templates cannot run, such as an include.
+- [storage_not_configured](https://docs.formfeed.dev/errors/storage-not-configured): HTTP 409 Storage not configured. The request names an object in the workspace's own bucket, or tests or redelivers copies, but the workspace has no storage connection.
+- [storage_test_failed](https://docs.formfeed.dev/errors/storage-test-failed): HTTP 422 Storage test failed. Formfeed could not write the test object to the bucket, so the storage connection was not saved.
+
+## CLI
+
+- [CLI overview](https://docs.formfeed.dev/cli): The formfeed command line tool: templates as files, local preview, offline validation and tests, renders and CI previews.
+- [Install and log in](https://docs.formfeed.dev/cli/installation): Install the formfeed CLI with npm, log in through the browser or with an API key, and bind a folder to a workspace.
+- [Configuration](https://docs.formfeed.dev/cli/configuration): formfeed.json, environment variables, the user config, and which one wins.
+- [Commands](https://docs.formfeed.dev/cli/commands): Every formfeed command with its flags.
+- [CI usage](https://docs.formfeed.dev/cli/ci): Validate, test, preview and publish templates from GitHub Actions or GitLab CI.
+- [Exit codes](https://docs.formfeed.dev/cli/exit-codes): What each exit code of the CLI means, for scripts and CI.
+
+## Development kit
+
+- [Development kit overview](https://docs.formfeed.dev/devkit/overview): What runs on your machine and what runs in the cloud when you work on templates locally, and which package does what.
+- [Project layout](https://docs.formfeed.dev/devkit/project-layout): How templates are stored as files.
+- [Dev server](https://docs.formfeed.dev/devkit/dev-server): formfeed dev, the hot-reload preview.
+- [Testing templates](https://docs.formfeed.dev/devkit/testing): Vitest and Jest matchers, snapshots and CI.
+- [Engine package](https://docs.formfeed.dev/devkit/engine-package): Use @formfeed/engine directly in Node or the browser to compile, analyse and render templates in your own tools.
+
+## Integrations
+
+- [Integrations](https://docs.formfeed.dev/integrations/overview): Render documents from AI agents, n8n, Zapier, Make, Airtable, Power Automate, Pipedream and Activepieces, and what is planned for Bubble.
+- [MCP server](https://docs.formfeed.dev/integrations/mcp): Let AI agents list templates, validate data and render documents through the Model Context Protocol.
+- [Zapier](https://docs.formfeed.dev/integrations/zapier): Create documents from any Zapier trigger, upload files to the library and start Zaps when a render finishes, from a published Zap template or step by step.
+- [n8n](https://docs.formfeed.dev/integrations/n8n): Render documents from an n8n workflow and start workflows when a render finishes.
+- [Make](https://docs.formfeed.dev/integrations/make): Render documents in Make scenarios, pass the file to the next module, and start scenarios when a render finishes.
+- [Airtable](https://docs.formfeed.dev/integrations/airtable): Render a document per Airtable record from an automation script, write the file back into an attachment field, and turn a whole view into one batch.
+- [Power Automate](https://docs.formfeed.dev/integrations/power-automate): Render documents in Power Automate, Power Apps, Logic Apps and Copilot Studio, attach the file, and start flows when a render finishes.
+- [Pipedream](https://docs.formfeed.dev/integrations/pipedream): Render documents in Pipedream workflows into the File Stash, and start workflows when a render or batch finishes.
+- [Activepieces](https://docs.formfeed.dev/integrations/activepieces): Render documents in Activepieces flows, pass the file to the next step, and start flows when a render or batch finishes.
+
+## Migrate
+
+- [Migrate from apitemplate.io](https://docs.formfeed.dev/migrate/apitemplate-io): Import your Jinja2 templates and switch the API in an afternoon.
+- [Migrate from PDFMonkey](https://docs.formfeed.dev/migrate/pdfmonkey): Import your Liquid code templates with your PDFMonkey API key and see up front what needs attention.
+- [Migrate from jsreport](https://docs.formfeed.dev/migrate/jsreport): Import Handlebars templates from a jsreport export, with assets, child templates and chrome-pdf settings.
+
+## Optional
+
+- [The whole documentation as one file](https://docs.formfeed.dev/llms-full.txt): every page above, in plain text
+- [OpenAPI document](https://api-eu.formfeed.dev/v1/openapi.json): every endpoint, parameter and schema
+- [Changelog](https://docs.formfeed.dev/changelog)

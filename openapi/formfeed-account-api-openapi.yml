@@ -1,0 +1,880 @@
+openapi: 3.2.0
+info:
+  title: Formfeed Account API
+  version: 1.0.0
+  contact:
+    name: Formfeed support
+    email: support@formfeed.dev
+    url: https://formfeed.dev
+  termsOfService: https://formfeed.dev/legal/terms
+  description: 'Operations tagged Account across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api-eu.formfeed.dev/v1
+  description: EU (Frankfurt), where every workspace renders and stores today
+- url: https://api.formfeed.dev/v1
+  description: Routes to the workspace's region
+- url: https://api-us.formfeed.dev/v1
+  description: Reserved for a US region, which is not open yet
+security:
+- bearerAuth: []
+tags:
+- name: Account
+  description: Workspace, plan and usage.
+paths:
+  /auth/device:
+    post:
+      tags:
+      - Account
+      operationId: startDeviceLogin
+      summary: Start a device authorisation
+      description: Unauthenticated. The CLI calls this, shows `user_code`, and polls `/auth/device/token` until the person approves it in the app.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client_name:
+                  type: string
+                  maxLength: 100
+      responses:
+        '201':
+          description: Flow started.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  device_code:
+                    type: string
+                  user_code:
+                    type: string
+                    example: ABCD-EFGH
+                  verification_uri:
+                    type: string
+                    format: uri
+                  verification_uri_complete:
+                    type: string
+                    format: uri
+                  expires_in:
+                    type: integer
+                    example: 600
+                  interval:
+                    type: integer
+                    example: 5
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /auth/device/token:
+    post:
+      tags:
+      - Account
+      operationId: claimDeviceLogin
+      summary: Poll a device authorisation
+      description: Unauthenticated. Answers 202 while the request is pending and 200 with the API key once it is approved. The key is handed over exactly once.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - device_code
+              properties:
+                device_code:
+                  type: string
+      responses:
+        '200':
+          description: Approved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_key:
+                    type: string
+                    example: ff_live_3f9c...
+                  workspace:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      slug:
+                        type: string
+                      name:
+                        type: string
+                      region:
+                        $ref: '#/components/schemas/Region'
+                  organization:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      slug:
+                        type: string
+                      name:
+                        type: string
+        '202':
+          description: Still waiting for approval.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - pending
+                  interval:
+                    type: integer
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /account:
+    get:
+      tags:
+      - Account
+      operationId: getAccount
+      summary: Get workspace and plan
+      responses:
+        '200':
+          description: Account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /usage:
+    get:
+      tags:
+      - Account
+      operationId: getUsage
+      summary: Get usage for the current period
+      parameters:
+      - name: period
+        in: query
+        description: '`current`, or `YYYY-MM` for the billing period that started in that month'
+        schema:
+          type: string
+          default: current
+      responses:
+        '200':
+          description: Usage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usage'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /workspaces/{id}:
+    delete:
+      tags:
+      - Account
+      operationId: deleteWorkspace
+      summary: Delete a workspace
+      description: 'Deletes a workspace of the key''s organisation, for example a per-branch preview workspace your
+
+        CI created. The workspace disappears from the app and the API at once and its API keys are
+
+        revoked: the calling key stops working immediately when it deleted its own workspace, other
+
+        keys within a minute. Templates, renders, stored outputs and files are removed for good
+
+        after 30 days; there is no undo through the API. The slug can be used for a new workspace
+
+        right away. The last workspace of an organisation is refused with 409 `last_workspace`.
+
+        Needs `workspace:delete`, which no key has by default.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The workspace id (`workspace.id` of `GET /account`).
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: '`last_workspace`: the organisation has no other workspace. Delete the organisation in the app instead.'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /workspaces/{id}/storage:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      description: The workspace id.
+      schema:
+        type: string
+        format: uuid
+    get:
+      tags:
+      - Account
+      operationId: getStorageConnection
+      summary: Read the storage connection
+      description: 'The bucket this workspace''s outputs are copied to (bring your own storage, Pro plan and above),
+
+        with its deliveries of the last 24 hours. The secret is never returned, only the last four
+
+        characters of the access key id. Owners and admins of the organisation, signed in to the app:
+
+        no API key can manage a connection, and every storage route answers 403 to one.'
+      responses:
+        '200':
+          description: The connection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageConnectionState'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      tags:
+      - Account
+      operationId: putStorageConnection
+      summary: Connect a bucket
+      description: 'Creates or replaces the workspace''s connection. Formfeed writes the test object
+
+        `.formfeed/connection-test.txt` first, with the credentials in the request, and stores
+
+        nothing unless that works: a wrong key or a missing bucket answers 422 `storage_test_failed`
+
+        with the provider''s error. Formfeed only ever writes (`PutObject`); it never reads, lists or
+
+        deletes in the bucket. Leave out the credentials to keep the stored ones while the endpoint
+
+        stays the same. From then on every output of the workspace (renders, batch items and zips,
+
+        PDF tools, office renders) is copied to the bucket in the background; Formfeed keeps its own
+
+        copy for the workspace retention. Owners and admins in the app only.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageConnectionPut'
+      responses:
+        '200':
+          description: Replaced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageConnection'
+        '201':
+          description: Connected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageConnection'
+        '403':
+          description: 'An API key or a role other than owner and admin; `forbidden` with `feature: byo_storage` below the Pro plan.'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: '`storage_test_failed`: the test object could not be written; `error` carries the provider''s code.'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags:
+      - Account
+      operationId: deleteStorageConnection
+      summary: Disconnect the bucket
+      description: Removes the connection and its credentials. Deliveries still waiting end; objects already in the bucket stay there.
+      responses:
+        '204':
+          description: Disconnected.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /workspaces/{id}/storage/test:
+    post:
+      tags:
+      - Account
+      operationId: testStorageConnection
+      summary: Test the storage connection again
+      description: 'Writes the test object with the stored credentials. A connection paused after five permanent
+
+        failures in a row resumes once this passes.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: The test passed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  key:
+                    type: string
+                    example: formfeed/.formfeed/connection-test.txt
+                  connection:
+                    $ref: '#/components/schemas/StorageConnection'
+        '409':
+          description: '`storage_not_configured`: the workspace has no connection.'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: '`storage_test_failed`, with the provider''s `error` and the `connection`.'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+  /workspaces/{id}/storage/redeliver:
+    post:
+      tags:
+      - Account
+      operationId: redeliverStorage
+      summary: Deliver failed copies again
+      description: 'Queues every failed delivery again whose output Formfeed still keeps, for one render, one
+
+        batch, a time range, or (with an empty body) all of them, to the connection''s current bucket
+
+        and key. Nothing is rendered again. At most 10 000 per call; `truncated` says whether more are
+
+        waiting. A paused connection answers 409 `conflict`: test it again first.'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                render_id:
+                  type: string
+                  example: rnd_7da09ab6cd9946b798c187c2a9350852
+                job_id:
+                  type: string
+                  example: job_5f0c3b0a9d2e4c1b8a7f6e5d4c3b2a19
+                since:
+                  type: string
+                  format: date-time
+                until:
+                  type: string
+                  format: date-time
+      responses:
+        '202':
+          description: Queued.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requeued:
+                    type: integer
+                    example: 42
+                  truncated:
+                    type: boolean
+        '409':
+          description: '`storage_not_configured`, or `conflict` while the connection is paused.'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    servers:
+    - url: https://api-eu.formfeed.dev/v1
+      description: EU (Frankfurt), where every workspace renders and stores today
+    - url: https://api.formfeed.dev/v1
+      description: Routes to the workspace's region
+    - url: https://api-us.formfeed.dev/v1
+      description: Reserved for a US region, which is not open yet
+components:
+  schemas:
+    Region:
+      type: string
+      enum:
+      - eu
+      - us
+      - apac
+    Usage:
+      type: object
+      properties:
+        period:
+          type: string
+          example: 2026-09
+        included:
+          type: integer
+        used:
+          type: number
+        overage_used:
+          type: number
+        overage_balance:
+          type: number
+        daily:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              units:
+                type: number
+              renders:
+                type: integer
+        by_template:
+          type: array
+          items:
+            type: object
+            properties:
+              template:
+                type: string
+              units:
+                type: number
+    StorageConnection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspace_id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+          enum:
+          - s3
+          - r2
+          - s3_compatible
+        endpoint:
+          type: string
+          format: uri
+        region:
+          type:
+          - string
+          - 'null'
+        account_id:
+          type:
+          - string
+          - 'null'
+        jurisdiction:
+          type:
+          - string
+          - 'null'
+          enum:
+          - default
+          - eu
+        bucket:
+          type: string
+        prefix:
+          type: string
+        force_path_style:
+          type: boolean
+        key_template:
+          type: string
+        environments:
+          type: array
+          items:
+            type: string
+            enum:
+            - live
+            - test
+        public_base_url:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+          enum:
+          - active
+          - paused
+        paused_reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - failures
+          - workspace_deleted
+          - plan
+          description: '`failures`: five permanent failures in a row (test the connection again to resume); `plan`: the plan no longer includes bring your own storage.'
+        access_key_hint:
+          type:
+          - string
+          - 'null'
+          example: 7QX2
+          description: The last four characters of the access key id.
+        last_tested_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        last_error:
+          allOf:
+          - $ref: '#/components/schemas/StorageError'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    StorageConnectionPut:
+      type: object
+      required:
+      - provider
+      - bucket
+      properties:
+        provider:
+          type: string
+          enum:
+          - s3
+          - r2
+          - s3_compatible
+          description: '`s3_compatible` covers Hetzner, IONOS, Scaleway, Wasabi, Backblaze B2, MinIO and Google Cloud Storage (HMAC keys).'
+        region:
+          type: string
+          example: eu-central-1
+          description: '`s3`: the AWS region, from which the endpoint is derived. `s3_compatible`: the region the provider signs with (`us-east-1` when omitted).'
+        account_id:
+          type: string
+          example: 0123456789abcdef0123456789abcdef
+          description: '`r2`: the Cloudflare account id.'
+        jurisdiction:
+          type: string
+          enum:
+          - default
+          - eu
+          default: default
+          description: '`r2`: `eu` for a bucket in the EU jurisdiction.'
+        endpoint:
+          type: string
+          format: uri
+          example: https://fsn1.your-objectstorage.com
+          description: '`s3_compatible`: the service address, https only.'
+        force_path_style:
+          type: boolean
+          default: false
+          description: '`s3_compatible`: address the bucket in the path instead of the host name.'
+        bucket:
+          type: string
+          example: fennlor-docs
+        prefix:
+          type: string
+          example: formfeed/
+          description: Folder every key is written below; a trailing slash is added.
+        key_template:
+          type: string
+          default: '{yyyy}/{mm}/{render_id}/{filename}'
+          description: Object key below the prefix, with `{workspace}`, `{template}`, `{environment}`, `{render_id}`, `{job_id}`, `{yyyy}`, `{mm}`, `{dd}` and `{filename}`. A placeholder without a value (`{template}` of an HTML render, `{render_id}` of a batch zip) drops its segment.
+        environments:
+          type: array
+          items:
+            type: string
+            enum:
+            - live
+            - test
+          default:
+          - live
+          description: Which renders are copied; test renders only when `test` is listed.
+        public_base_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+          example: https://docs.fennlor.example
+          description: Where you serve the bucket, https only; each delivery's `url` is built from it.
+        access_key_id:
+          type: string
+          description: Write-only. Needed for a new connection or a changed endpoint.
+        secret_access_key:
+          type: string
+          description: Write-only; never returned.
+    StorageConnectionState:
+      allOf:
+      - $ref: '#/components/schemas/StorageConnection'
+      - type: object
+        properties:
+          deliveries_24h:
+            type: object
+            properties:
+              pending:
+                type: integer
+              delivered:
+                type: integer
+              failed:
+                type: integer
+    StorageError:
+      type: object
+      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+      properties:
+        code:
+          type: string
+          example: AccessDenied
+        http_status:
+          type:
+          - integer
+          - 'null'
+          example: 403
+        message:
+          type: string
+          example: Access Denied
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    Account:
+      type: object
+      properties:
+        workspace:
+          type: object
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            name:
+              type: string
+            region:
+              $ref: '#/components/schemas/Region'
+        organization:
+          type: object
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            name:
+              type: string
+        plan:
+          type: object
+          properties:
+            id:
+              type: string
+              example: pro
+            name:
+              type: string
+            monthly_units:
+              type: integer
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        units:
+          type: object
+          properties:
+            included:
+              type: integer
+            used:
+              type: number
+            overage_balance:
+              type: number
+        limits:
+          type: object
+          additionalProperties: true
+  responses:
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: 'API key from the workspace: `ff_live_…` or `ff_test_…`. Also accepted in the `X-API-Key` header.'
+externalDocs:
+  description: Guides, SDKs and the CLI
+  url: https://docs.formfeed.dev
+x-refined-from:
+- api_formfeed.json
+- formfeed-openapi.json

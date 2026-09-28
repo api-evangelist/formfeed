@@ -1,0 +1,35 @@
+generated: '2026-09-28'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://docs.formfeed.dev/api/webhooks
+sources:
+- https://docs.formfeed.dev/api/webhooks
+- https://docs.formfeed.dev/api/develop-webhooks-locally
+- https://docs.formfeed.dev/api/reference/webhooks
+- https://docs.formfeed.dev/de/api/webhooks
+description: Formfeed sends HTTPS POSTs with a JSON payload to each registered endpoint. Deliveries are signed with an HMAC‑SHA256 signature in
+  the `Webhook-Signature` header using the endpoint’s secret.
+events:
+- event: render.completed
+  description: 'A render succeeded: sync, async, or one item of a batch.'
+- event: render.failed
+  description: A render failed for good.
+- event: job.completed
+  description: A batch finished and at least one item succeeded (the zip is ready when requested).
+- event: job.failed
+  description: A batch finished and every item failed.
+- event: quota.warning
+  description: 80 % of the period's units are used.
+- event: quota.exceeded
+  description: The period's units are used up.
+- event: storage.delivered
+  description: Opt‑in. A document's copy arrived in the workspace's own bucket.
+- event: storage.failed
+  description: Opt‑in. A copy to the workspace's own bucket failed for good.
+- event: webhook.test
+  description: You pressed Send test or called POST /webhooks/{id}/test.
+delivery:
+  signature: Webhook-Signature header containing t=<unix seconds>,v1=<hex> where v1 is HMAC‑SHA256 of t + "." + rawBody using the endpoint's secret
+  retries: A delivery succeeds when the endpoint returns any 2xx within 10 seconds; otherwise it is retried after 1 minute, 5 minutes, 30 minutes,
+    2 hours and 12 hours, for a total of six attempts
+docs: https://docs.formfeed.dev/api/webhooks
