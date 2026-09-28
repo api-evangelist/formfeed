@@ -1,0 +1,30 @@
+aid: formfeed
+name: Formfeed
+description: 'Formfeed is a company surfaced via the API Evangelist harvest backlog (source: new-submission)
+  and added to the network as a stub for full-pipeline profiling.'
+url: https://raw.githubusercontent.com/api-evangelist/formfeed/refs/heads/main/apis.yml
+x-type: company
+x-source: harvest:new-submission
+x-tier: stub
+x-tier-reason: harvest
+specificationVersion: '0.20'
+created: '2026-09-28'
+modified: '2026-09-28'
+tags:
+- Company
+apis: []
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+- FN: APIs.json
+  email: info@apis.io
+common:
+- type: Website
+  url: https://formfeed.dev/
+- type: Documentation
+  url: https://docs.formfeed.dev/api/overview
+x-submission-notes: PDF and image generation API (templates + JSON in, documents out); Philipp Staudt
+  IT-Dienstleistungen, Saarbruecken, Germany. Root and docs return 403 to plain fetchers (bot protection),
+  llms.txt 200 -- use the browser strategy (fetch-url.py).
+x-submission-probe: '2026-09-28: root 403 + invented 403 (bot-blocking), llms.txt 200'
+x-submitted-by: it@staudt-it-dienstleistungen.de (apis.io/add, 2026-09-27)
