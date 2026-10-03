@@ -2,12 +2,12 @@ openapi: 3.2.0
 info:
   title: Formfeed Brand API
   version: 1.0.0
+  description: Generate PDFs and images from templates and JSON data, one API call per document.
+  termsOfService: https://formfeed.dev/legal/terms
   contact:
     name: Formfeed support
     email: support@formfeed.dev
     url: https://formfeed.dev
-  termsOfService: https://formfeed.dev/legal/terms
-  description: 'Operations tagged Brand across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api-eu.formfeed.dev/v1
   description: EU (Frankfurt), where every workspace renders and stores today
@@ -47,13 +47,6 @@ paths:
                 $ref: '#/components/schemas/Brand'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
 components:
   schemas:
     Problem:
@@ -280,6 +273,3 @@ components:
 externalDocs:
   description: Guides, SDKs and the CLI
   url: https://docs.formfeed.dev
-x-refined-from:
-- api_formfeed.json
-- formfeed-openapi.json

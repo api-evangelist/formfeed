@@ -2,12 +2,12 @@ openapi: 3.2.0
 info:
   title: Formfeed Renders API
   version: 1.0.0
+  description: Generate PDFs and images from templates and JSON data, one API call per document.
+  termsOfService: https://formfeed.dev/legal/terms
   contact:
     name: Formfeed support
     email: support@formfeed.dev
     url: https://formfeed.dev
-  termsOfService: https://formfeed.dev/legal/terms
-  description: 'Operations tagged Renders across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api-eu.formfeed.dev/v1
   description: EU (Frankfurt), where every workspace renders and stores today
@@ -202,13 +202,6 @@ paths:
                     - 'null'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /renders/{id}:
     get:
       tags:
@@ -228,13 +221,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /renders/{id}/result:
     get:
       tags:
@@ -290,13 +276,6 @@ paths:
           $ref: '#/components/responses/Unprocessable'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /renders/{id}/input:
     get:
       tags:
@@ -319,13 +298,6 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /renders/{id}/outputs:
     delete:
       tags:
@@ -341,13 +313,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /renders/batch:
     post:
       tags:
@@ -411,13 +376,6 @@ paths:
           $ref: '#/components/responses/Unprocessable'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /jobs/{id}:
     get:
       tags:
@@ -442,379 +400,124 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
 components:
   schemas:
-    OutputFormat:
-      type: string
-      enum:
-      - pdf
-      - png
-      - jpg
-      - webp
-      - docx
-      - pptx
-      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
-    Job:
+    Settings:
       type: object
+      description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
+      additionalProperties: true
       properties:
-        id:
-          type: string
-          example: job_01J8ZK4M3Q
-        status:
-          type: string
-          enum:
-          - queued
-          - processing
-          - completed
-          - partially_failed
-          - failed
-        total:
-          type: integer
-        succeeded:
-          type: integer
-        failed:
-          type: integer
-        zip_url:
-          type:
-          - string
-          - 'null'
-          format: uri
-        storage:
-          allOf:
-          - $ref: '#/components/schemas/StorageDelivery'
-          description: The zip's copy in the workspace's own bucket; each item carries its own.
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Render'
-        meta:
-          type: object
-          additionalProperties: true
-        created_at:
-          type: string
-          format: date-time
-        completed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-    Engine:
-      type: string
-      enum:
-      - jinja2
-      - liquid
-      - handlebars
-    StorageOption:
-      description: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is
-
-        copied under the connection''s key template. `false` leaves this document out. `key` names its
-
-        object below the connection''s prefix instead of the key template: relative, without `.` or `..`
-
-        segments, at most 1024 bytes; an existing object is overwritten. A render with its own key is
-
-        never answered from the dedup cache, and one without a connection answers 409
-
-        `storage_not_configured`. In a batch, each item carries its own.
-
-        '
-      oneOf:
-      - type: boolean
-        enum:
-        - false
-      - type: object
-        additionalProperties: false
-        properties:
-          key:
-            type: string
-            maxLength: 1024
-            example: invoices/2026/RE-1001.pdf
-    RenderStatus:
-      type: string
-      enum:
-      - queued
-      - rendering
-      - succeeded
-      - failed
-    RenderInput:
-      type: object
-      description: The stored request of a render, as `GET /renders/{id}/input` returns it. Fields that do not apply are left out.
-      properties:
-        render_id:
-          type: string
-          example: rnd_01J8ZK4M3Q7X
-        template:
+        paper:
           type: object
           properties:
-            id:
+            format:
               type: string
-            slug:
-              type: string
-            version:
-              type: integer
-            channel:
-              type: string
-        html:
-          type: string
-          description: Ad-hoc HTML renders.
-        engine:
-          $ref: '#/components/schemas/Engine'
-        url:
-          type: string
-          format: uri
-          description: URL renders.
-        data:
-          type: object
-          additionalProperties: true
-        locale:
-          type: string
-        output:
-          $ref: '#/components/schemas/OutputFormat'
-        settings:
-          type: object
-          additionalProperties: true
-        filename:
-          type: string
-        post:
-          type: object
-          additionalProperties: true
-          description: Post-processing without passwords.
-        meta:
-          type: object
-          additionalProperties: true
-        environment:
-          type: string
-          enum:
-          - live
-          - test
-        created_at:
-          type: string
-          format: date-time
-    Region:
-      type: string
-      enum:
-      - eu
-      - us
-      - apac
-    Problem:
-      type: object
-      required:
-      - type
-      - title
-      - status
-      properties:
-        type:
-          type: string
-          format: uri
-          example: https://docs.formfeed.dev/errors/template-syntax
-        title:
-          type: string
-          example: Template syntax error
-        status:
-          type: integer
-          example: 422
-        detail:
-          type: string
-        code:
-          type: string
-          enum:
-          - template_not_found
-          - template_syntax_error
-          - template_runtime_error
-          - data_validation_error
-          - navigation_failed
-          - render_timeout
-          - page_limit_exceeded
-          - output_too_large
-          - file_too_large
-          - source_not_found
-          - source_invalid
-          - source_encrypted
-          - tool_failed
-          - file_type_unsupported
-          - office_document_invalid
-          - office_document_too_large
-          - office_conversion_failed
-          - office_unavailable
-          - unsupported_in_office
-          - test_output_unavailable
-          - quota_exceeded
-          - rate_limited
-          - region_unavailable
-          - worker_exhausted
-          - invalid_request
-          - unauthorized
-          - forbidden
-          - not_found
-          - conflict
-          - not_implemented
-          - schema_breaking_change
-          - channel_not_found
-          - channel_name_invalid
-          - channel_in_use
-          - render_input_expired
-          - listen_session_limit
-          - listen_session_ended
-          - last_workspace
-          - storage_not_configured
-          - storage_test_failed
-        location:
-          type:
-          - object
-          - 'null'
-          properties:
-            line:
-              type: integer
-            column:
-              type: integer
-            file:
-              type: string
-              enum:
-              - template
-              - css
-              - head
-              - header
-              - footer
-            part:
-              type: string
-              example: word/document.xml
-              description: 'Office templates: the part of the file (document, header, footer, slide).'
-            paragraph:
-              type: integer
-              description: 'Office templates: the paragraph within the part, from 1.'
-        request_id:
-          type: string
-        errors:
-          type: array
-          description: '`data_validation_error` only: every place where the data does not match the schema.'
-          items:
-            type: object
-            properties:
-              path:
-                type:
-                - string
-                - 'null'
-                example: data.invoice.number
-              message:
-                type: string
-                example: 'data.invoice.number: must be string'
-        index:
-          type: integer
-          description: 'Batch requests only: the first item that failed.'
-    Render:
-      type: object
-      required:
-      - id
-      - status
-      - output
-      - region
-      - created_at
-      properties:
-        id:
-          type: string
-          example: rnd_01J8ZK4M3Q7X
-        status:
-          $ref: '#/components/schemas/RenderStatus'
-        output:
-          $ref: '#/components/schemas/OutputFormat'
-        download_url:
-          type:
-          - string
-          - 'null'
-          format: uri
-        expires_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        bytes:
-          type:
-          - integer
-          - 'null'
-        page_count:
-          type:
-          - integer
-          - 'null'
-        units:
-          type: number
-          example: 1
-        region:
-          $ref: '#/components/schemas/Region'
-        environment:
-          type: string
-          enum:
-          - live
-          - test
-        template:
-          type:
-          - object
-          - 'null'
-          properties:
-            id:
-              type: string
-            slug:
-              type: string
-            version:
-              type: integer
-            channel:
+              example: A4
+            width:
               type:
               - string
               - 'null'
-              description: The release channel the version came from (`published` by default); null when the request named a version number or `latest`.
-            canary:
+            height:
+              type:
+              - string
+              - 'null'
+            landscape:
               type: boolean
-              description: True when the channel's canary share picked this version.
-        engine_version:
-          type: string
-          description: Chromium build and engine package version, for reproducibility.
-          example: chromium-140.0.7339.16/engine-1.4.0
-        template_checksum:
-          type:
-          - string
-          - 'null'
-        output_sha256:
-          type:
-          - string
-          - 'null'
-        deduplicated:
-          type: boolean
-        storage:
-          allOf:
-          - $ref: '#/components/schemas/StorageDelivery'
-        timings:
+              default: false
+        margin:
           type: object
           properties:
-            queue_ms:
-              type: integer
-            compile_ms:
-              type: integer
-            render_ms:
-              type: integer
-            upload_ms:
-              type: integer
-            total_ms:
-              type: integer
-        error:
-          allOf:
-          - $ref: '#/components/schemas/Problem'
-        meta:
+            top:
+              type: string
+              example: 20mm
+            right:
+              type: string
+              example: 15mm
+            bottom:
+              type: string
+              example: 20mm
+            left:
+              type: string
+              example: 15mm
+        header:
           type: object
-          additionalProperties: true
-        created_at:
+          description: Printed across the whole page width inside the top margin.
+          properties:
+            html:
+              type: string
+            height:
+              type: string
+            padding:
+              type: string
+              description: CSS padding inside the header box; `0` for designs that run edge to edge.
+              default: 0 10mm
+        footer:
+          type: object
+          description: Printed across the whole page width inside the bottom margin.
+          properties:
+            html:
+              type: string
+            height:
+              type: string
+            padding:
+              type: string
+              description: CSS padding inside the footer box; `0` for designs that run edge to edge.
+              default: 0 10mm
+        printBackground:
+          type: boolean
+          default: true
+        scale:
+          type: number
+          default: 1
+        image:
+          type: object
+          properties:
+            width:
+              type: integer
+              example: 1200
+            height:
+              type: integer
+              example: 630
+            deviceScaleFactor:
+              type: number
+              default: 2
+            format:
+              type: string
+              enum:
+              - png
+              - jpeg
+              - webp
+              description: Output of an image template when the request names no `output`. `jpg` is accepted as well.
+            quality:
+              type: integer
+              minimum: 1
+              maximum: 100
+            fullPage:
+              type: boolean
+              default: false
+            transparent:
+              type: boolean
+              default: false
+        office:
+          type: object
+          description: Word and PowerPoint templates. Page setup, margins, headers and footers come from the document; the Chromium settings above do not apply.
+          properties:
+            output:
+              type: string
+              enum:
+              - docx
+              - pptx
+              - pdf
+              description: Output when the request names none; the template's own format without it.
+        locale:
           type: string
-          format: date-time
-        completed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
+          example: de-DE
+        timezone:
+          type: string
+          example: Europe/Berlin
+        currency:
+          type: string
+          example: EUR
     RenderRequest:
       type: object
       properties:
@@ -980,6 +683,60 @@ components:
         storage:
           allOf:
           - $ref: '#/components/schemas/StorageOption'
+    RenderInput:
+      type: object
+      description: The stored request of a render, as `GET /renders/{id}/input` returns it. Fields that do not apply are left out.
+      properties:
+        render_id:
+          type: string
+          example: rnd_01J8ZK4M3Q7X
+        template:
+          type: object
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            version:
+              type: integer
+            channel:
+              type: string
+        html:
+          type: string
+          description: Ad-hoc HTML renders.
+        engine:
+          $ref: '#/components/schemas/Engine'
+        url:
+          type: string
+          format: uri
+          description: URL renders.
+        data:
+          type: object
+          additionalProperties: true
+        locale:
+          type: string
+        output:
+          $ref: '#/components/schemas/OutputFormat'
+        settings:
+          type: object
+          additionalProperties: true
+        filename:
+          type: string
+        post:
+          type: object
+          additionalProperties: true
+          description: Post-processing without passwords.
+        meta:
+          type: object
+          additionalProperties: true
+        environment:
+          type: string
+          enum:
+          - live
+          - test
+        created_at:
+          type: string
+          format: date-time
     StorageError:
       type: object
       description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
@@ -995,122 +752,180 @@ components:
         message:
           type: string
           example: Access Denied
-    Settings:
+    StorageOption:
+      description: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is
+
+        copied under the connection''s key template. `false` leaves this document out. `key` names its
+
+        object below the connection''s prefix instead of the key template: relative, without `.` or `..`
+
+        segments, at most 1024 bytes; an existing object is overwritten. A render with its own key is
+
+        never answered from the dedup cache, and one without a connection answers 409
+
+        `storage_not_configured`. In a batch, each item carries its own.
+
+        '
+      oneOf:
+      - type: boolean
+        enum:
+        - false
+      - type: object
+        additionalProperties: false
+        properties:
+          key:
+            type: string
+            maxLength: 1024
+            example: invoices/2026/RE-1001.pdf
+    Problem:
       type: object
-      description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
-      additionalProperties: true
+      required:
+      - type
+      - title
+      - status
       properties:
-        paper:
-          type: object
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
           properties:
-            format:
-              type: string
-              example: A4
-            width:
-              type:
-              - string
-              - 'null'
-            height:
-              type:
-              - string
-              - 'null'
-            landscape:
-              type: boolean
-              default: false
-        margin:
-          type: object
-          properties:
-            top:
-              type: string
-              example: 20mm
-            right:
-              type: string
-              example: 15mm
-            bottom:
-              type: string
-              example: 20mm
-            left:
-              type: string
-              example: 15mm
-        header:
-          type: object
-          description: Printed across the whole page width inside the top margin.
-          properties:
-            html:
-              type: string
-            height:
-              type: string
-            padding:
-              type: string
-              description: CSS padding inside the header box; `0` for designs that run edge to edge.
-              default: 0 10mm
-        footer:
-          type: object
-          description: Printed across the whole page width inside the bottom margin.
-          properties:
-            html:
-              type: string
-            height:
-              type: string
-            padding:
-              type: string
-              description: CSS padding inside the footer box; `0` for designs that run edge to edge.
-              default: 0 10mm
-        printBackground:
-          type: boolean
-          default: true
-        scale:
-          type: number
-          default: 1
-        image:
-          type: object
-          properties:
-            width:
+            line:
               type: integer
-              example: 1200
-            height:
+            column:
               type: integer
-              example: 630
-            deviceScaleFactor:
-              type: number
-              default: 2
-            format:
+            file:
               type: string
               enum:
-              - png
-              - jpeg
-              - webp
-              description: Output of an image template when the request names no `output`. `jpg` is accepted as well.
-            quality:
-              type: integer
-              minimum: 1
-              maximum: 100
-            fullPage:
-              type: boolean
-              default: false
-            transparent:
-              type: boolean
-              default: false
-        office:
-          type: object
-          description: Word and PowerPoint templates. Page setup, margins, headers and footers come from the document; the Chromium settings above do not apply.
-          properties:
-            output:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
               type: string
-              enum:
-              - docx
-              - pptx
-              - pdf
-              description: Output when the request names none; the template's own format without it.
-        locale:
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
           type: string
-          example: de-DE
-        timezone:
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    Job:
+      type: object
+      properties:
+        id:
           type: string
-          example: Europe/Berlin
-        currency:
+          example: job_01J8ZK4M3Q
+        status:
           type: string
-          example: EUR
+          enum:
+          - queued
+          - processing
+          - completed
+          - partially_failed
+          - failed
+        total:
+          type: integer
+        succeeded:
+          type: integer
+        failed:
+          type: integer
+        zip_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        storage:
+          allOf:
+          - $ref: '#/components/schemas/StorageDelivery'
+          description: The zip's copy in the workspace's own bucket; each item carries its own.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Render'
+        meta:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
     StorageDelivery:
       type: object
       description: 'The output''s copy in the workspace''s own bucket; null when none applies (no connection, a
@@ -1157,36 +972,161 @@ components:
         error:
           allOf:
           - $ref: '#/components/schemas/StorageError'
-  parameters:
-    Cursor:
-      name: cursor
-      in: query
-      schema:
-        type: string
-    RenderId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-        example: rnd_01J8ZK4M3Q7X
-    Limit:
-      name: limit
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 50
-    IdempotencyKey:
-      name: Idempotency-Key
-      in: header
-      required: false
-      description: Unique key per logical request; replays within 24 h return the original response.
-      schema:
-        type: string
-        maxLength: 128
+    OutputFormat:
+      type: string
+      enum:
+      - pdf
+      - png
+      - jpg
+      - webp
+      - docx
+      - pptx
+      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
+    Engine:
+      type: string
+      enum:
+      - jinja2
+      - liquid
+      - handlebars
+    RenderStatus:
+      type: string
+      enum:
+      - queued
+      - rendering
+      - succeeded
+      - failed
+    Render:
+      type: object
+      required:
+      - id
+      - status
+      - output
+      - region
+      - created_at
+      properties:
+        id:
+          type: string
+          example: rnd_01J8ZK4M3Q7X
+        status:
+          $ref: '#/components/schemas/RenderStatus'
+        output:
+          $ref: '#/components/schemas/OutputFormat'
+        download_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        bytes:
+          type:
+          - integer
+          - 'null'
+        page_count:
+          type:
+          - integer
+          - 'null'
+        units:
+          type: number
+          example: 1
+        region:
+          $ref: '#/components/schemas/Region'
+        environment:
+          type: string
+          enum:
+          - live
+          - test
+        template:
+          type:
+          - object
+          - 'null'
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            version:
+              type: integer
+            channel:
+              type:
+              - string
+              - 'null'
+              description: The release channel the version came from (`published` by default); null when the request named a version number or `latest`.
+            canary:
+              type: boolean
+              description: True when the channel's canary share picked this version.
+        engine_version:
+          type: string
+          description: Chromium build and engine package version, for reproducibility.
+          example: chromium-140.0.7339.16/engine-1.4.0
+        template_checksum:
+          type:
+          - string
+          - 'null'
+        output_sha256:
+          type:
+          - string
+          - 'null'
+        deduplicated:
+          type: boolean
+        storage:
+          allOf:
+          - $ref: '#/components/schemas/StorageDelivery'
+        timings:
+          type: object
+          properties:
+            queue_ms:
+              type: integer
+            compile_ms:
+              type: integer
+            render_ms:
+              type: integer
+            upload_ms:
+              type: integer
+            total_ms:
+              type: integer
+        error:
+          allOf:
+          - $ref: '#/components/schemas/Problem'
+        meta:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    Region:
+      type: string
+      enum:
+      - eu
+      - us
+      - apac
   responses:
+    Unprocessable:
+      description: Validation, template or data error. Template errors include `location`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
     QuotaExceeded:
       description: Monthly units exhausted and no overage available.
       content:
@@ -1212,24 +1152,35 @@ components:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-    NotFound:
-      description: Not found.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    Unprocessable:
-      description: Validation, template or data error. Template errors include `location`.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    Problem:
-      description: Error (RFC 9457 problem details).
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
+  parameters:
+    RenderId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        example: rnd_01J8ZK4M3Q7X
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Unique key per logical request; replays within 24 h return the original response.
+      schema:
+        type: string
+        maxLength: 128
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
   securitySchemes:
     bearerAuth:
       type: http
@@ -1239,6 +1190,3 @@ components:
 externalDocs:
   description: Guides, SDKs and the CLI
   url: https://docs.formfeed.dev
-x-refined-from:
-- api_formfeed.json
-- formfeed-openapi.json

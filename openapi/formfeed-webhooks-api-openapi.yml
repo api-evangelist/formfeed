@@ -2,12 +2,12 @@ openapi: 3.2.0
 info:
   title: Formfeed Webhooks API
   version: 1.0.0
+  description: Generate PDFs and images from templates and JSON data, one API call per document.
+  termsOfService: https://formfeed.dev/legal/terms
   contact:
     name: Formfeed support
     email: support@formfeed.dev
     url: https://formfeed.dev
-  termsOfService: https://formfeed.dev/legal/terms
-  description: 'Operations tagged Webhooks across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api-eu.formfeed.dev/v1
   description: EU (Frankfurt), where every workspace renders and stores today
@@ -67,13 +67,6 @@ paths:
                 $ref: '#/components/schemas/WebhookEndpoint'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /webhooks/{id}:
     parameters:
     - name: id
@@ -112,13 +105,6 @@ paths:
           description: Deleted.
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /webhooks/{id}/test:
     post:
       tags:
@@ -143,13 +129,6 @@ paths:
                     type: boolean
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /webhooks/listen:
     post:
       tags:
@@ -214,13 +193,6 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /webhooks/listen/{id}:
     delete:
       tags:
@@ -241,13 +213,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /webhooks/events/{id}/resend:
     post:
       tags:
@@ -297,28 +262,59 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
 components:
   responses:
-    NotFound:
-      description: Not found.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
     Problem:
       description: Error (RFC 9457 problem details).
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
   schemas:
+    WebhookEndpointCreate:
+      type: object
+      required:
+      - url
+      - events
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+            - render.completed
+            - render.failed
+            - job.completed
+            - job.failed
+            - quota.warning
+            - quota.exceeded
+            - storage.delivered
+            - storage.failed
+        environments:
+          type: array
+          description: Render environments whose events the endpoint receives; both by default. Quota events are sent regardless.
+          items:
+            type: string
+            enum:
+            - live
+            - test
+          default:
+          - live
+          - test
+        description:
+          type: string
+        enabled:
+          type: boolean
+          default: true
     Problem:
       type: object
       required:
@@ -438,44 +434,6 @@ components:
           created_at:
             type: string
             format: date-time
-    WebhookEndpointCreate:
-      type: object
-      required:
-      - url
-      - events
-      properties:
-        url:
-          type: string
-          format: uri
-        events:
-          type: array
-          items:
-            type: string
-            enum:
-            - render.completed
-            - render.failed
-            - job.completed
-            - job.failed
-            - quota.warning
-            - quota.exceeded
-            - storage.delivered
-            - storage.failed
-        environments:
-          type: array
-          description: Render environments whose events the endpoint receives; both by default. Quota events are sent regardless.
-          items:
-            type: string
-            enum:
-            - live
-            - test
-          default:
-          - live
-          - test
-        description:
-          type: string
-        enabled:
-          type: boolean
-          default: true
   securitySchemes:
     bearerAuth:
       type: http
@@ -485,6 +443,3 @@ components:
 externalDocs:
   description: Guides, SDKs and the CLI
   url: https://docs.formfeed.dev
-x-refined-from:
-- api_formfeed.json
-- formfeed-openapi.json

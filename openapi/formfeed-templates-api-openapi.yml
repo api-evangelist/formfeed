@@ -2,12 +2,12 @@ openapi: 3.2.0
 info:
   title: Formfeed Templates API
   version: 1.0.0
+  description: Generate PDFs and images from templates and JSON data, one API call per document.
+  termsOfService: https://formfeed.dev/legal/terms
   contact:
     name: Formfeed support
     email: support@formfeed.dev
     url: https://formfeed.dev
-  termsOfService: https://formfeed.dev/legal/terms
-  description: 'Operations tagged Templates across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api-eu.formfeed.dev/v1
   description: EU (Frankfurt), where every workspace renders and stores today
@@ -128,13 +128,6 @@ paths:
           $ref: '#/components/responses/Unprocessable'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}:
     parameters:
     - $ref: '#/components/parameters/TemplateId'
@@ -197,13 +190,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/versions:
     parameters:
     - $ref: '#/components/parameters/TemplateId'
@@ -263,13 +249,6 @@ paths:
           $ref: '#/components/responses/Unprocessable'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/versions/{which}:
     get:
       tags:
@@ -296,13 +275,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/versions/{which}/file:
     get:
       tags:
@@ -334,13 +306,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/versions/{number}/publish:
     post:
       tags:
@@ -379,13 +344,6 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/channels:
     get:
       tags:
@@ -420,13 +378,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/channels/{name}:
     parameters:
     - $ref: '#/components/parameters/TemplateId'
@@ -514,13 +465,6 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/channels/{name}/promote:
     post:
       tags:
@@ -555,13 +499,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/channels/{name}/rollback:
     post:
       tags:
@@ -596,13 +533,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/schema:
     get:
       tags:
@@ -654,13 +584,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /templates/{id}/validate:
     post:
       tags:
@@ -716,481 +639,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
 components:
   schemas:
-    SchemaChange:
-      type: object
-      required:
-      - path
-      - pointer
-      - kind
-      - breaking
-      - message
-      properties:
-        path:
-          type: string
-          example: customer.email
-          description: Dotted field path; `items[]` for array elements, empty for the data itself.
-        pointer:
-          type: string
-          example: /properties/customer/properties/email
-        kind:
-          type: string
-          enum:
-          - field-added-required
-          - field-added-optional
-          - field-removed
-          - field-became-required
-          - field-became-optional
-          - type-narrowed
-          - type-widened
-          - enum-values-removed
-          - enum-values-added
-          - enum-added
-          - enum-removed
-          - const-changed
-          - constraint-tightened
-          - constraint-relaxed
-          - additional-properties-closed
-          - additional-properties-opened
-          - keyword-changed
-        breaking:
-          type: boolean
-        message:
-          type: string
-          example: '"customer.email" is now required'
-    TemplateCreate:
-      type: object
-      required:
-      - name
-      - slug
-      - kind
-      - engine
-      description: '`html` is required for `pdf` and `image` templates.'
-      properties:
-        name:
-          type: string
-        slug:
-          type: string
-          pattern: ^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$
-        description:
-          type: string
-        kind:
-          $ref: '#/components/schemas/TemplateKind'
-        engine:
-          $ref: '#/components/schemas/Engine'
-        html:
-          type: string
-        css:
-          type: string
-        head:
-          type: string
-        settings:
-          $ref: '#/components/schemas/Settings'
-        sample_data:
-          type: object
-          additionalProperties: true
-        data_schema:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        i18n:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        partials:
-          type: object
-          additionalProperties:
-            type: string
-          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
-        tags:
-          type: array
-          items:
-            type: string
-        publish:
-          type: boolean
-          default: false
-    TemplateKind:
-      type: string
-      enum:
-      - pdf
-      - image
-      - docx
-      - pptx
-      description: '`docx` and `pptx` templates are Word and PowerPoint files with tags in their text (Starter plan and above).'
-    TemplateVersion:
-      type: object
-      properties:
-        id:
-          type: string
-        number:
-          type: integer
-        status:
-          type: string
-          enum:
-          - draft
-          - published
-          - archived
-        checksum:
-          type: string
-        change_note:
-          type:
-          - string
-          - 'null'
-        html:
-          type: string
-        css:
-          type: string
-        head:
-          type: string
-        settings:
-          $ref: '#/components/schemas/Settings'
-        sample_data:
-          type: object
-          additionalProperties: true
-        data_schema:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        i18n:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        partials:
-          type: object
-          additionalProperties:
-            type: string
-          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
-        source_file:
-          type:
-          - object
-          - 'null'
-          description: 'Word and PowerPoint templates: the file of this version; download it from `/templates/{id}/versions/{which}/file`. Null for other kinds.'
-          properties:
-            sha256:
-              type: string
-            bytes:
-              type: integer
-            format:
-              type: string
-              enum:
-              - docx
-              - pptx
-        created_at:
-          type: string
-          format: date-time
-        published_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        schema_check:
-          $ref: '#/components/schemas/SchemaCheck'
-    TemplateVersionCreate:
-      type: object
-      description: '`html` is required for `pdf` and `image` templates.'
-      properties:
-        html:
-          type: string
-        css:
-          type: string
-        head:
-          type: string
-        settings:
-          $ref: '#/components/schemas/Settings'
-        sample_data:
-          type: object
-          additionalProperties: true
-        data_schema:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        i18n:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        partials:
-          type: object
-          additionalProperties:
-            type: string
-          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
-        data_sets:
-          type: object
-          additionalProperties: true
-          description: Named sample data sets besides `sample_data` (`name` → data), as the editor shows them and `formfeed templates push` sends them from `data/*.json`. At most 50.
-        change_note:
-          type: string
-        base_checksum:
-          type: string
-          description: Checksum of the version this draft was based on; conflict (409) if the latest version differs.
-        publish:
-          type: boolean
-          default: false
-        allow_breaking:
-          type: boolean
-          default: false
-          description: 'With `publish`: publish although the data schema breaks callers of the published version (otherwise 409 `schema_breaking_change`).'
-    Diagnostic:
-      type: object
-      properties:
-        severity:
-          type: string
-          enum:
-          - error
-          - warning
-          - info
-        message:
-          type: string
-        code:
-          type: string
-        location:
-          type: object
-          properties:
-            line:
-              type: integer
-            column:
-              type: integer
-        path:
-          type: string
-          description: 'Data errors only: where in the data, e.g. `data.invoice.lines[0].qty`.'
-        part:
-          type: string
-          description: 'Word and PowerPoint templates only: the file part the tag is in, e.g. `word/document.xml` or `ppt/slides/slide2.xml`.'
-        paragraph:
-          type: integer
-          description: 'Word and PowerPoint templates only: the 1-based paragraph in `part`, as the template page lists it.'
-    Problem:
-      type: object
-      required:
-      - type
-      - title
-      - status
-      properties:
-        type:
-          type: string
-          format: uri
-          example: https://docs.formfeed.dev/errors/template-syntax
-        title:
-          type: string
-          example: Template syntax error
-        status:
-          type: integer
-          example: 422
-        detail:
-          type: string
-        code:
-          type: string
-          enum:
-          - template_not_found
-          - template_syntax_error
-          - template_runtime_error
-          - data_validation_error
-          - navigation_failed
-          - render_timeout
-          - page_limit_exceeded
-          - output_too_large
-          - file_too_large
-          - source_not_found
-          - source_invalid
-          - source_encrypted
-          - tool_failed
-          - file_type_unsupported
-          - office_document_invalid
-          - office_document_too_large
-          - office_conversion_failed
-          - office_unavailable
-          - unsupported_in_office
-          - test_output_unavailable
-          - quota_exceeded
-          - rate_limited
-          - region_unavailable
-          - worker_exhausted
-          - invalid_request
-          - unauthorized
-          - forbidden
-          - not_found
-          - conflict
-          - not_implemented
-          - schema_breaking_change
-          - channel_not_found
-          - channel_name_invalid
-          - channel_in_use
-          - render_input_expired
-          - listen_session_limit
-          - listen_session_ended
-          - last_workspace
-          - storage_not_configured
-          - storage_test_failed
-        location:
-          type:
-          - object
-          - 'null'
-          properties:
-            line:
-              type: integer
-            column:
-              type: integer
-            file:
-              type: string
-              enum:
-              - template
-              - css
-              - head
-              - header
-              - footer
-            part:
-              type: string
-              example: word/document.xml
-              description: 'Office templates: the part of the file (document, header, footer, slide).'
-            paragraph:
-              type: integer
-              description: 'Office templates: the paragraph within the part, from 1.'
-        request_id:
-          type: string
-        errors:
-          type: array
-          description: '`data_validation_error` only: every place where the data does not match the schema.'
-          items:
-            type: object
-            properties:
-              path:
-                type:
-                - string
-                - 'null'
-                example: data.invoice.number
-              message:
-                type: string
-                example: 'data.invoice.number: must be string'
-        index:
-          type: integer
-          description: 'Batch requests only: the first item that failed.'
-    Engine:
-      type: string
-      enum:
-      - jinja2
-      - liquid
-      - handlebars
-    Channel:
-      type: object
-      required:
-      - name
-      - version
-      - canary
-      - previous_version
-      - updated_at
-      properties:
-        name:
-          type: string
-          example: staging
-          description: '`published`, or 1 to 32 lowercase letters, digits and dashes starting with a letter.'
-        version:
-          type:
-          - integer
-          - 'null'
-          description: The version the channel renders; null for `published` before anything was published.
-        canary:
-          type:
-          - object
-          - 'null'
-          properties:
-            version:
-              type: integer
-            percent:
-              type: integer
-              minimum: 1
-              maximum: 50
-        previous_version:
-          type:
-          - integer
-          - 'null'
-          description: The version before the last move; `rollback` returns to it.
-        updated_at:
-          type: string
-          format: date-time
-        usage_24h:
-          type: array
-          description: Renders of the last 24 hours that came through this channel, per version (list only).
-          items:
-            type: object
-            properties:
-              version:
-                type: integer
-              renders:
-                type: integer
-              failed:
-                type: integer
-        schema_check:
-          $ref: '#/components/schemas/SchemaCheck'
-    SchemaCheck:
-      type: object
-      description: 'The data schema of the version going live compared with the one callers use now. `stored`: both versions store a schema, and breaking changes refuse without `allow_breaking`. `inferred`: at least one has none, so schemas inferred from sample data were compared and the result is only a warning. `none`: nothing to compare.'
-      required:
-      - source
-      - breaking
-      - safe
-      properties:
-        source:
-          type: string
-          enum:
-          - stored
-          - inferred
-          - none
-        breaking:
-          type: array
-          items:
-            $ref: '#/components/schemas/SchemaChange'
-        safe:
-          type: array
-          items:
-            $ref: '#/components/schemas/SchemaChange'
-    Template:
-      type: object
-      properties:
-        id:
-          type: string
-          example: tpl_01J8ZK4M3Q
-        slug:
-          type: string
-          example: invoice-de
-        name:
-          type: string
-        description:
-          type:
-          - string
-          - 'null'
-        kind:
-          $ref: '#/components/schemas/TemplateKind'
-        engine:
-          $ref: '#/components/schemas/Engine'
-        tags:
-          type: array
-          items:
-            type: string
-        published_version:
-          type:
-          - integer
-          - 'null'
-        latest_version:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     Settings:
       type: object
       description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
@@ -1307,9 +757,497 @@ components:
         currency:
           type: string
           example: EUR
+    Channel:
+      type: object
+      required:
+      - name
+      - version
+      - canary
+      - previous_version
+      - updated_at
+      properties:
+        name:
+          type: string
+          example: staging
+          description: '`published`, or 1 to 32 lowercase letters, digits and dashes starting with a letter.'
+        version:
+          type:
+          - integer
+          - 'null'
+          description: The version the channel renders; null for `published` before anything was published.
+        canary:
+          type:
+          - object
+          - 'null'
+          properties:
+            version:
+              type: integer
+            percent:
+              type: integer
+              minimum: 1
+              maximum: 50
+        previous_version:
+          type:
+          - integer
+          - 'null'
+          description: The version before the last move; `rollback` returns to it.
+        updated_at:
+          type: string
+          format: date-time
+        usage_24h:
+          type: array
+          description: Renders of the last 24 hours that came through this channel, per version (list only).
+          items:
+            type: object
+            properties:
+              version:
+                type: integer
+              renders:
+                type: integer
+              failed:
+                type: integer
+        schema_check:
+          $ref: '#/components/schemas/SchemaCheck'
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          example: tpl_01J8ZK4M3Q
+        slug:
+          type: string
+          example: invoice-de
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        kind:
+          $ref: '#/components/schemas/TemplateKind'
+        engine:
+          $ref: '#/components/schemas/Engine'
+        tags:
+          type: array
+          items:
+            type: string
+        published_version:
+          type:
+          - integer
+          - 'null'
+        latest_version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TemplateCreate:
+      type: object
+      required:
+      - name
+      - slug
+      - kind
+      - engine
+      description: '`html` is required for `pdf` and `image` templates.'
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+          pattern: ^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$
+        description:
+          type: string
+        kind:
+          $ref: '#/components/schemas/TemplateKind'
+        engine:
+          $ref: '#/components/schemas/Engine'
+        html:
+          type: string
+        css:
+          type: string
+        head:
+          type: string
+        settings:
+          $ref: '#/components/schemas/Settings'
+        sample_data:
+          type: object
+          additionalProperties: true
+        data_schema:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        i18n:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        partials:
+          type: object
+          additionalProperties:
+            type: string
+          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
+        tags:
+          type: array
+          items:
+            type: string
+        publish:
+          type: boolean
+          default: false
+    TemplateVersion:
+      type: object
+      properties:
+        id:
+          type: string
+        number:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - published
+          - archived
+        checksum:
+          type: string
+        change_note:
+          type:
+          - string
+          - 'null'
+        html:
+          type: string
+        css:
+          type: string
+        head:
+          type: string
+        settings:
+          $ref: '#/components/schemas/Settings'
+        sample_data:
+          type: object
+          additionalProperties: true
+        data_schema:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        i18n:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        partials:
+          type: object
+          additionalProperties:
+            type: string
+          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
+        source_file:
+          type:
+          - object
+          - 'null'
+          description: 'Word and PowerPoint templates: the file of this version; download it from `/templates/{id}/versions/{which}/file`. Null for other kinds.'
+          properties:
+            sha256:
+              type: string
+            bytes:
+              type: integer
+            format:
+              type: string
+              enum:
+              - docx
+              - pptx
+        created_at:
+          type: string
+          format: date-time
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        schema_check:
+          $ref: '#/components/schemas/SchemaCheck'
+    SchemaCheck:
+      type: object
+      description: 'The data schema of the version going live compared with the one callers use now. `stored`: both versions store a schema, and breaking changes refuse without `allow_breaking`. `inferred`: at least one has none, so schemas inferred from sample data were compared and the result is only a warning. `none`: nothing to compare.'
+      required:
+      - source
+      - breaking
+      - safe
+      properties:
+        source:
+          type: string
+          enum:
+          - stored
+          - inferred
+          - none
+        breaking:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaChange'
+        safe:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaChange'
+    Diagnostic:
+      type: object
+      properties:
+        severity:
+          type: string
+          enum:
+          - error
+          - warning
+          - info
+        message:
+          type: string
+        code:
+          type: string
+        location:
+          type: object
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+        path:
+          type: string
+          description: 'Data errors only: where in the data, e.g. `data.invoice.lines[0].qty`.'
+        part:
+          type: string
+          description: 'Word and PowerPoint templates only: the file part the tag is in, e.g. `word/document.xml` or `ppt/slides/slide2.xml`.'
+        paragraph:
+          type: integer
+          description: 'Word and PowerPoint templates only: the 1-based paragraph in `part`, as the template page lists it.'
+    Engine:
+      type: string
+      enum:
+      - jinja2
+      - liquid
+      - handlebars
+    TemplateKind:
+      type: string
+      enum:
+      - pdf
+      - image
+      - docx
+      - pptx
+      description: '`docx` and `pptx` templates are Word and PowerPoint files with tags in their text (Starter plan and above).'
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    TemplateVersionCreate:
+      type: object
+      description: '`html` is required for `pdf` and `image` templates.'
+      properties:
+        html:
+          type: string
+        css:
+          type: string
+        head:
+          type: string
+        settings:
+          $ref: '#/components/schemas/Settings'
+        sample_data:
+          type: object
+          additionalProperties: true
+        data_schema:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        i18n:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        partials:
+          type: object
+          additionalProperties:
+            type: string
+          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
+        data_sets:
+          type: object
+          additionalProperties: true
+          description: Named sample data sets besides `sample_data` (`name` → data), as the editor shows them and `formfeed templates push` sends them from `data/*.json`. At most 50.
+        change_note:
+          type: string
+        base_checksum:
+          type: string
+          description: Checksum of the version this draft was based on; conflict (409) if the latest version differs.
+        publish:
+          type: boolean
+          default: false
+        allow_breaking:
+          type: boolean
+          default: false
+          description: 'With `publish`: publish although the data schema breaks callers of the published version (otherwise 409 `schema_breaking_change`).'
+    SchemaChange:
+      type: object
+      required:
+      - path
+      - pointer
+      - kind
+      - breaking
+      - message
+      properties:
+        path:
+          type: string
+          example: customer.email
+          description: Dotted field path; `items[]` for array elements, empty for the data itself.
+        pointer:
+          type: string
+          example: /properties/customer/properties/email
+        kind:
+          type: string
+          enum:
+          - field-added-required
+          - field-added-optional
+          - field-removed
+          - field-became-required
+          - field-became-optional
+          - type-narrowed
+          - type-widened
+          - enum-values-removed
+          - enum-values-added
+          - enum-added
+          - enum-removed
+          - const-changed
+          - constraint-tightened
+          - constraint-relaxed
+          - additional-properties-closed
+          - additional-properties-opened
+          - keyword-changed
+        breaking:
+          type: boolean
+        message:
+          type: string
+          example: '"customer.email" is now required'
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+    TemplateId:
+      name: id
+      in: path
+      required: true
+      description: Template id (`tpl_…`) or slug.
+      schema:
+        type: string
+        example: invoice-de
   responses:
-    Unprocessable:
-      description: Validation, template or data error. Template errors include `location`.
+    Problem:
+      description: Error (RFC 9457 problem details).
       content:
         application/problem+json:
           schema:
@@ -1320,34 +1258,12 @@ components:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-    Problem:
-      description: Error (RFC 9457 problem details).
+    Unprocessable:
+      description: Validation, template or data error. Template errors include `location`.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-  parameters:
-    Limit:
-      name: limit
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 50
-    TemplateId:
-      name: id
-      in: path
-      required: true
-      description: Template id (`tpl_…`) or slug.
-      schema:
-        type: string
-        example: invoice-de
-    Cursor:
-      name: cursor
-      in: query
-      schema:
-        type: string
   securitySchemes:
     bearerAuth:
       type: http
@@ -1357,6 +1273,3 @@ components:
 externalDocs:
   description: Guides, SDKs and the CLI
   url: https://docs.formfeed.dev
-x-refined-from:
-- api_formfeed.json
-- formfeed-openapi.json

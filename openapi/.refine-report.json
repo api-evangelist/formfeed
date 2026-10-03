@@ -1,8 +1,7 @@
 {
   "provider": "formfeed",
   "sources": [
-    "api_formfeed.json",
-    "formfeed-openapi.json"
+    "_original/api_formfeed.json"
   ],
   "outputs": [
     "formfeed-account-api-openapi.yml",
@@ -15,25 +14,25 @@
     "formfeed-templates-api-openapi.yml",
     "formfeed-webhooks-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/api_formfeed.json",
-    "archived openapi/formfeed-openapi.json"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "api_formfeed.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "formfeed-openapi.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "tag 'Account' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'Brand' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'Compat' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'Files' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'PDF tools' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'Partials' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'Renders' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'Templates' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "tag 'Webhooks' spans 2 source specs (api_formfeed.json, formfeed-openapi.json): per-path servers applied",
-    "apis.yml register: written (+9 apis, 9 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/formfeed-openapi.json: archived document superseded by a larger archived document",
+    "formfeed-account-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-brand-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-compat-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-files-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-partials-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-pdf-tools-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-renders-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-templates-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "formfeed-webhooks-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

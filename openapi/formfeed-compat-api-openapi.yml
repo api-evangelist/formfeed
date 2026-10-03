@@ -2,12 +2,12 @@ openapi: 3.2.0
 info:
   title: Formfeed Compat API
   version: 1.0.0
+  description: Generate PDFs and images from templates and JSON data, one API call per document.
+  termsOfService: https://formfeed.dev/legal/terms
   contact:
     name: Formfeed support
     email: support@formfeed.dev
     url: https://formfeed.dev
-  termsOfService: https://formfeed.dev/legal/terms
-  description: 'Operations tagged Compat across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api-eu.formfeed.dev/v1
   description: EU (Frankfurt), where every workspace renders and stores today
@@ -53,13 +53,6 @@ paths:
           $ref: '#/components/responses/CompatResponse'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /compat/apitemplate/create-image:
     post:
       tags:
@@ -94,13 +87,6 @@ paths:
           $ref: '#/components/responses/CompatResponse'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /compat/apitemplate/create-pdf-from-html:
     post:
       tags:
@@ -130,13 +116,6 @@ paths:
           $ref: '#/components/responses/CompatResponse'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /compat/apitemplate/create-pdf-from-url:
     post:
       tags:
@@ -164,13 +143,6 @@ paths:
           $ref: '#/components/responses/CompatResponse'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
 components:
   schemas:
     Problem:
@@ -279,12 +251,6 @@ components:
           type: integer
           description: 'Batch requests only: the first item that failed.'
   responses:
-    Problem:
-      description: Error (RFC 9457 problem details).
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
     CompatResponse:
       description: apitemplate.io shaped response.
       content:
@@ -304,6 +270,12 @@ components:
                 description: create-image only.
               transaction_ref:
                 type: string
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
   securitySchemes:
     bearerAuth:
       type: http
@@ -313,6 +285,3 @@ components:
 externalDocs:
   description: Guides, SDKs and the CLI
   url: https://docs.formfeed.dev
-x-refined-from:
-- api_formfeed.json
-- formfeed-openapi.json

@@ -2,12 +2,12 @@ openapi: 3.2.0
 info:
   title: Formfeed PDF tools API
   version: 1.0.0
+  description: Generate PDFs and images from templates and JSON data, one API call per document.
+  termsOfService: https://formfeed.dev/legal/terms
   contact:
     name: Formfeed support
     email: support@formfeed.dev
     url: https://formfeed.dev
-  termsOfService: https://formfeed.dev/legal/terms
-  description: 'Operations tagged PDF tools across 2 of this provider''s published API definitions: api_formfeed.json, formfeed-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api-eu.formfeed.dev/v1
   description: EU (Frankfurt), where every workspace renders and stores today
@@ -80,13 +80,6 @@ paths:
                 $ref: '#/components/schemas/Render'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /pdf/protect:
     post:
       tags:
@@ -156,13 +149,6 @@ paths:
                 $ref: '#/components/schemas/Render'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /pdf/convert:
     post:
       tags:
@@ -304,13 +290,6 @@ paths:
                 $ref: '#/components/schemas/Problem'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /pdf/watermark:
     post:
       tags:
@@ -384,13 +363,6 @@ paths:
                 $ref: '#/components/schemas/Render'
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
   /pdf/info:
     post:
       tags:
@@ -442,151 +414,8 @@ paths:
                     additionalProperties: true
         default:
           $ref: '#/components/responses/Problem'
-    servers:
-    - url: https://api-eu.formfeed.dev/v1
-      description: EU (Frankfurt), where every workspace renders and stores today
-    - url: https://api.formfeed.dev/v1
-      description: Routes to the workspace's region
-    - url: https://api-us.formfeed.dev/v1
-      description: Reserved for a US region, which is not open yet
 components:
   schemas:
-    OutputFormat:
-      type: string
-      enum:
-      - pdf
-      - png
-      - jpg
-      - webp
-      - docx
-      - pptx
-      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
-    Region:
-      type: string
-      enum:
-      - eu
-      - us
-      - apac
-    StorageError:
-      type: object
-      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
-      properties:
-        code:
-          type: string
-          example: AccessDenied
-        http_status:
-          type:
-          - integer
-          - 'null'
-          example: 403
-        message:
-          type: string
-          example: Access Denied
-    Problem:
-      type: object
-      required:
-      - type
-      - title
-      - status
-      properties:
-        type:
-          type: string
-          format: uri
-          example: https://docs.formfeed.dev/errors/template-syntax
-        title:
-          type: string
-          example: Template syntax error
-        status:
-          type: integer
-          example: 422
-        detail:
-          type: string
-        code:
-          type: string
-          enum:
-          - template_not_found
-          - template_syntax_error
-          - template_runtime_error
-          - data_validation_error
-          - navigation_failed
-          - render_timeout
-          - page_limit_exceeded
-          - output_too_large
-          - file_too_large
-          - source_not_found
-          - source_invalid
-          - source_encrypted
-          - tool_failed
-          - file_type_unsupported
-          - office_document_invalid
-          - office_document_too_large
-          - office_conversion_failed
-          - office_unavailable
-          - unsupported_in_office
-          - test_output_unavailable
-          - quota_exceeded
-          - rate_limited
-          - region_unavailable
-          - worker_exhausted
-          - invalid_request
-          - unauthorized
-          - forbidden
-          - not_found
-          - conflict
-          - not_implemented
-          - schema_breaking_change
-          - channel_not_found
-          - channel_name_invalid
-          - channel_in_use
-          - render_input_expired
-          - listen_session_limit
-          - listen_session_ended
-          - last_workspace
-          - storage_not_configured
-          - storage_test_failed
-        location:
-          type:
-          - object
-          - 'null'
-          properties:
-            line:
-              type: integer
-            column:
-              type: integer
-            file:
-              type: string
-              enum:
-              - template
-              - css
-              - head
-              - header
-              - footer
-            part:
-              type: string
-              example: word/document.xml
-              description: 'Office templates: the part of the file (document, header, footer, slide).'
-            paragraph:
-              type: integer
-              description: 'Office templates: the paragraph within the part, from 1.'
-        request_id:
-          type: string
-        errors:
-          type: array
-          description: '`data_validation_error` only: every place where the data does not match the schema.'
-          items:
-            type: object
-            properties:
-              path:
-                type:
-                - string
-                - 'null'
-                example: data.invoice.number
-              message:
-                type: string
-                example: 'data.invoice.number: must be string'
-        index:
-          type: integer
-          description: 'Batch requests only: the first item that failed.'
     RenderStatus:
       type: string
       enum:
@@ -701,6 +530,21 @@ components:
           - string
           - 'null'
           format: date-time
+    StorageError:
+      type: object
+      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+      properties:
+        code:
+          type: string
+          example: AccessDenied
+        http_status:
+          type:
+          - integer
+          - 'null'
+          example: 403
+        message:
+          type: string
+          example: Access Denied
     StorageOption:
       description: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is
 
@@ -726,6 +570,127 @@ components:
             type: string
             maxLength: 1024
             example: invoices/2026/RE-1001.pdf
+    OutputFormat:
+      type: string
+      enum:
+      - pdf
+      - png
+      - jpg
+      - webp
+      - docx
+      - pptx
+      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    Region:
+      type: string
+      enum:
+      - eu
+      - us
+      - apac
     StorageDelivery:
       type: object
       description: 'The output''s copy in the workspace''s own bucket; null when none applies (no connection, a
@@ -788,6 +753,3 @@ components:
 externalDocs:
   description: Guides, SDKs and the CLI
   url: https://docs.formfeed.dev
-x-refined-from:
-- api_formfeed.json
-- formfeed-openapi.json
