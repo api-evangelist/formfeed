@@ -263,20 +263,21 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
 components:
-  responses:
-    Problem:
-      description: Error (RFC 9457 problem details).
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    NotFound:
-      description: Not found.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
   schemas:
+    WebhookEndpoint:
+      allOf:
+      - $ref: '#/components/schemas/WebhookEndpointCreate'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: whk_01J8ZK4M3Q
+          secret:
+            type: string
+            description: Only returned on creation.
+          created_at:
+            type: string
+            format: date-time
     WebhookEndpointCreate:
       type: object
       required:
@@ -420,20 +421,19 @@ components:
         index:
           type: integer
           description: 'Batch requests only: the first item that failed.'
-    WebhookEndpoint:
-      allOf:
-      - $ref: '#/components/schemas/WebhookEndpointCreate'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: whk_01J8ZK4M3Q
-          secret:
-            type: string
-            description: Only returned on creation.
-          created_at:
-            type: string
-            format: date-time
+  responses:
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
   securitySchemes:
     bearerAuth:
       type: http

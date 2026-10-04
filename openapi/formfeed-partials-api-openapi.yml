@@ -143,19 +143,25 @@ paths:
           $ref: '#/components/responses/Problem'
 components:
   responses:
-    Problem:
-      description: Error (RFC 9457 problem details).
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
     NotFound:
       description: Not found.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
   schemas:
+    Engine:
+      type: string
+      enum:
+      - jinja2
+      - liquid
+      - handlebars
     PartialPut:
       type: object
       required:
@@ -176,12 +182,37 @@ components:
           type: integer
           minimum: 1
           description: The version this change is based on; conflict (409) if the partial has a different version. Leave out to write unconditionally.
-    Engine:
-      type: string
-      enum:
-      - jinja2
-      - liquid
-      - handlebars
+    Partial:
+      type: object
+      required:
+      - name
+      - engine
+      - version
+      - created_at
+      - updated_at
+      properties:
+        name:
+          type: string
+          example: letterhead
+        engine:
+          $ref: '#/components/schemas/Engine'
+        description:
+          type:
+          - string
+          - 'null'
+        version:
+          type: integer
+          example: 3
+          description: Grows when the source or the engine changes.
+        source:
+          type: string
+          description: Only in `GET /partials/{name}` and `PUT` responses.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     Problem:
       type: object
       required:
@@ -287,37 +318,6 @@ components:
         index:
           type: integer
           description: 'Batch requests only: the first item that failed.'
-    Partial:
-      type: object
-      required:
-      - name
-      - engine
-      - version
-      - created_at
-      - updated_at
-      properties:
-        name:
-          type: string
-          example: letterhead
-        engine:
-          $ref: '#/components/schemas/Engine'
-        description:
-          type:
-          - string
-          - 'null'
-        version:
-          type: integer
-          example: 3
-          description: Grows when the source or the engine changes.
-        source:
-          type: string
-          description: Only in `GET /partials/{name}` and `PUT` responses.
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
   securitySchemes:
     bearerAuth:
       type: http

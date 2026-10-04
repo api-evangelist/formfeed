@@ -411,20 +411,6 @@ paths:
           $ref: '#/components/responses/Problem'
 components:
   schemas:
-    StorageConnectionState:
-      allOf:
-      - $ref: '#/components/schemas/StorageConnection'
-      - type: object
-        properties:
-          deliveries_24h:
-            type: object
-            properties:
-              pending:
-                type: integer
-              delivered:
-                type: integer
-              failed:
-                type: integer
     StorageError:
       type: object
       description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
@@ -440,77 +426,6 @@ components:
         message:
           type: string
           example: Access Denied
-    StorageConnectionPut:
-      type: object
-      required:
-      - provider
-      - bucket
-      properties:
-        provider:
-          type: string
-          enum:
-          - s3
-          - r2
-          - s3_compatible
-          description: '`s3_compatible` covers Hetzner, IONOS, Scaleway, Wasabi, Backblaze B2, MinIO and Google Cloud Storage (HMAC keys).'
-        region:
-          type: string
-          example: eu-central-1
-          description: '`s3`: the AWS region, from which the endpoint is derived. `s3_compatible`: the region the provider signs with (`us-east-1` when omitted).'
-        account_id:
-          type: string
-          example: 0123456789abcdef0123456789abcdef
-          description: '`r2`: the Cloudflare account id.'
-        jurisdiction:
-          type: string
-          enum:
-          - default
-          - eu
-          default: default
-          description: '`r2`: `eu` for a bucket in the EU jurisdiction.'
-        endpoint:
-          type: string
-          format: uri
-          example: https://fsn1.your-objectstorage.com
-          description: '`s3_compatible`: the service address, https only.'
-        force_path_style:
-          type: boolean
-          default: false
-          description: '`s3_compatible`: address the bucket in the path instead of the host name.'
-        bucket:
-          type: string
-          example: fennlor-docs
-        prefix:
-          type: string
-          example: formfeed/
-          description: Folder every key is written below; a trailing slash is added.
-        key_template:
-          type: string
-          default: '{yyyy}/{mm}/{render_id}/{filename}'
-          description: Object key below the prefix, with `{workspace}`, `{template}`, `{environment}`, `{render_id}`, `{job_id}`, `{yyyy}`, `{mm}`, `{dd}` and `{filename}`. A placeholder without a value (`{template}` of an HTML render, `{render_id}` of a batch zip) drops its segment.
-        environments:
-          type: array
-          items:
-            type: string
-            enum:
-            - live
-            - test
-          default:
-          - live
-          description: Which renders are copied; test renders only when `test` is listed.
-        public_base_url:
-          type:
-          - string
-          - 'null'
-          format: uri
-          example: https://docs.fennlor.example
-          description: Where you serve the bucket, https only; each delivery's `url` is built from it.
-        access_key_id:
-          type: string
-          description: Write-only. Needed for a new connection or a changed endpoint.
-        secret_access_key:
-          type: string
-          description: Write-only; never returned.
     Account:
       type: object
       properties:
@@ -565,41 +480,12 @@ components:
         limits:
           type: object
           additionalProperties: true
-    Usage:
-      type: object
-      properties:
-        period:
-          type: string
-          example: 2026-09
-        included:
-          type: integer
-        used:
-          type: number
-        overage_used:
-          type: number
-        overage_balance:
-          type: number
-        daily:
-          type: array
-          items:
-            type: object
-            properties:
-              date:
-                type: string
-                format: date
-              units:
-                type: number
-              renders:
-                type: integer
-        by_template:
-          type: array
-          items:
-            type: object
-            properties:
-              template:
-                type: string
-              units:
-                type: number
+    Region:
+      type: string
+      enum:
+      - eu
+      - us
+      - apac
     StorageConnection:
       type: object
       properties:
@@ -686,6 +572,126 @@ components:
         updated_at:
           type: string
           format: date-time
+    Usage:
+      type: object
+      properties:
+        period:
+          type: string
+          example: 2026-09
+        included:
+          type: integer
+        used:
+          type: number
+        overage_used:
+          type: number
+        overage_balance:
+          type: number
+        daily:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              units:
+                type: number
+              renders:
+                type: integer
+        by_template:
+          type: array
+          items:
+            type: object
+            properties:
+              template:
+                type: string
+              units:
+                type: number
+    StorageConnectionState:
+      allOf:
+      - $ref: '#/components/schemas/StorageConnection'
+      - type: object
+        properties:
+          deliveries_24h:
+            type: object
+            properties:
+              pending:
+                type: integer
+              delivered:
+                type: integer
+              failed:
+                type: integer
+    StorageConnectionPut:
+      type: object
+      required:
+      - provider
+      - bucket
+      properties:
+        provider:
+          type: string
+          enum:
+          - s3
+          - r2
+          - s3_compatible
+          description: '`s3_compatible` covers Hetzner, IONOS, Scaleway, Wasabi, Backblaze B2, MinIO and Google Cloud Storage (HMAC keys).'
+        region:
+          type: string
+          example: eu-central-1
+          description: '`s3`: the AWS region, from which the endpoint is derived. `s3_compatible`: the region the provider signs with (`us-east-1` when omitted).'
+        account_id:
+          type: string
+          example: 0123456789abcdef0123456789abcdef
+          description: '`r2`: the Cloudflare account id.'
+        jurisdiction:
+          type: string
+          enum:
+          - default
+          - eu
+          default: default
+          description: '`r2`: `eu` for a bucket in the EU jurisdiction.'
+        endpoint:
+          type: string
+          format: uri
+          example: https://fsn1.your-objectstorage.com
+          description: '`s3_compatible`: the service address, https only.'
+        force_path_style:
+          type: boolean
+          default: false
+          description: '`s3_compatible`: address the bucket in the path instead of the host name.'
+        bucket:
+          type: string
+          example: fennlor-docs
+        prefix:
+          type: string
+          example: formfeed/
+          description: Folder every key is written below; a trailing slash is added.
+        key_template:
+          type: string
+          default: '{yyyy}/{mm}/{render_id}/{filename}'
+          description: Object key below the prefix, with `{workspace}`, `{template}`, `{environment}`, `{render_id}`, `{job_id}`, `{yyyy}`, `{mm}`, `{dd}` and `{filename}`. A placeholder without a value (`{template}` of an HTML render, `{render_id}` of a batch zip) drops its segment.
+        environments:
+          type: array
+          items:
+            type: string
+            enum:
+            - live
+            - test
+          default:
+          - live
+          description: Which renders are copied; test renders only when `test` is listed.
+        public_base_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+          example: https://docs.fennlor.example
+          description: Where you serve the bucket, https only; each delivery's `url` is built from it.
+        access_key_id:
+          type: string
+          description: Write-only. Needed for a new connection or a changed endpoint.
+        secret_access_key:
+          type: string
+          description: Write-only; never returned.
     Problem:
       type: object
       required:
@@ -791,21 +797,15 @@ components:
         index:
           type: integer
           description: 'Batch requests only: the first item that failed.'
-    Region:
-      type: string
-      enum:
-      - eu
-      - us
-      - apac
   responses:
-    Problem:
-      description: Error (RFC 9457 problem details).
+    NotFound:
+      description: Not found.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-    NotFound:
-      description: Not found.
+    Problem:
+      description: Error (RFC 9457 problem details).
       content:
         application/problem+json:
           schema:

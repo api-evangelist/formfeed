@@ -416,6 +416,27 @@ paths:
           $ref: '#/components/responses/Problem'
 components:
   schemas:
+    StorageError:
+      type: object
+      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+      properties:
+        code:
+          type: string
+          example: AccessDenied
+        http_status:
+          type:
+          - integer
+          - 'null'
+          example: 403
+        message:
+          type: string
+          example: Access Denied
+    Region:
+      type: string
+      enum:
+      - eu
+      - us
+      - apac
     RenderStatus:
       type: string
       enum:
@@ -530,21 +551,62 @@ components:
           - string
           - 'null'
           format: date-time
-    StorageError:
+    OutputFormat:
+      type: string
+      enum:
+      - pdf
+      - png
+      - jpg
+      - webp
+      - docx
+      - pptx
+      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
+    StorageDelivery:
       type: object
-      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+      description: 'The output''s copy in the workspace''s own bucket; null when none applies (no connection, a
+
+        paused one, `storage: false`, a test render the connection does not take). A synchronous
+
+        response reports `pending`: the copy is made in the background, and `storage.delivered` or
+
+        `storage.failed` follow as webhook events.
+
+        '
       properties:
-        code:
+        status:
           type: string
-          example: AccessDenied
-        http_status:
+          enum:
+          - pending
+          - delivered
+          - failed
+        bucket:
+          type: string
+          example: fennlor-docs
+        key:
+          type: string
+          example: formfeed/2026/09/rnd_7da09ab6cd9946b798c187c2a9350852/invoice.pdf
+        url:
           type:
-          - integer
+          - string
           - 'null'
-          example: 403
-        message:
-          type: string
-          example: Access Denied
+          description: The object below the connection's `public_base_url`; null without one.
+        reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - permanent
+          - rejected
+          - exhausted
+          - source_gone
+          - connection_deleted
+          - connection_paused
+          - plan
+          - workspace_deleted
+          description: 'Why a delivery failed: the credentials or bucket (`permanent`), the object (`rejected`), retries used up (`exhausted`), the output expired first (`source_gone`), or the connection went away.'
+        error:
+          allOf:
+          - $ref: '#/components/schemas/StorageError'
     StorageOption:
       description: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is
 
@@ -570,16 +632,6 @@ components:
             type: string
             maxLength: 1024
             example: invoices/2026/RE-1001.pdf
-    OutputFormat:
-      type: string
-      enum:
-      - pdf
-      - png
-      - jpg
-      - webp
-      - docx
-      - pptx
-      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
     Problem:
       type: object
       required:
@@ -685,58 +737,6 @@ components:
         index:
           type: integer
           description: 'Batch requests only: the first item that failed.'
-    Region:
-      type: string
-      enum:
-      - eu
-      - us
-      - apac
-    StorageDelivery:
-      type: object
-      description: 'The output''s copy in the workspace''s own bucket; null when none applies (no connection, a
-
-        paused one, `storage: false`, a test render the connection does not take). A synchronous
-
-        response reports `pending`: the copy is made in the background, and `storage.delivered` or
-
-        `storage.failed` follow as webhook events.
-
-        '
-      properties:
-        status:
-          type: string
-          enum:
-          - pending
-          - delivered
-          - failed
-        bucket:
-          type: string
-          example: fennlor-docs
-        key:
-          type: string
-          example: formfeed/2026/09/rnd_7da09ab6cd9946b798c187c2a9350852/invoice.pdf
-        url:
-          type:
-          - string
-          - 'null'
-          description: The object below the connection's `public_base_url`; null without one.
-        reason:
-          type:
-          - string
-          - 'null'
-          enum:
-          - permanent
-          - rejected
-          - exhausted
-          - source_gone
-          - connection_deleted
-          - connection_paused
-          - plan
-          - workspace_deleted
-          description: 'Why a delivery failed: the credentials or bucket (`permanent`), the object (`rejected`), retries used up (`exhausted`), the output expired first (`source_gone`), or the connection went away.'
-        error:
-          allOf:
-          - $ref: '#/components/schemas/StorageError'
   responses:
     Problem:
       description: Error (RFC 9457 problem details).

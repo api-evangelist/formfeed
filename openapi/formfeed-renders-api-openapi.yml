@@ -402,6 +402,100 @@ paths:
           $ref: '#/components/responses/Problem'
 components:
   schemas:
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          example: job_01J8ZK4M3Q
+        status:
+          type: string
+          enum:
+          - queued
+          - processing
+          - completed
+          - partially_failed
+          - failed
+        total:
+          type: integer
+        succeeded:
+          type: integer
+        failed:
+          type: integer
+        zip_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        storage:
+          allOf:
+          - $ref: '#/components/schemas/StorageDelivery'
+          description: The zip's copy in the workspace's own bucket; each item carries its own.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Render'
+        meta:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    OutputFormat:
+      type: string
+      enum:
+      - pdf
+      - png
+      - jpg
+      - webp
+      - docx
+      - pptx
+      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
+    StorageOption:
+      description: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is
+
+        copied under the connection''s key template. `false` leaves this document out. `key` names its
+
+        object below the connection''s prefix instead of the key template: relative, without `.` or `..`
+
+        segments, at most 1024 bytes; an existing object is overwritten. A render with its own key is
+
+        never answered from the dedup cache, and one without a connection answers 409
+
+        `storage_not_configured`. In a batch, each item carries its own.
+
+        '
+      oneOf:
+      - type: boolean
+        enum:
+        - false
+      - type: object
+        additionalProperties: false
+        properties:
+          key:
+            type: string
+            maxLength: 1024
+            example: invoices/2026/RE-1001.pdf
+    StorageError:
+      type: object
+      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
+      properties:
+        code:
+          type: string
+          example: AccessDenied
+        http_status:
+          type:
+          - integer
+          - 'null'
+          example: 403
+        message:
+          type: string
+          example: Access Denied
     Settings:
       type: object
       description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
@@ -518,6 +612,237 @@ components:
         currency:
           type: string
           example: EUR
+    RenderStatus:
+      type: string
+      enum:
+      - queued
+      - rendering
+      - succeeded
+      - failed
+    Render:
+      type: object
+      required:
+      - id
+      - status
+      - output
+      - region
+      - created_at
+      properties:
+        id:
+          type: string
+          example: rnd_01J8ZK4M3Q7X
+        status:
+          $ref: '#/components/schemas/RenderStatus'
+        output:
+          $ref: '#/components/schemas/OutputFormat'
+        download_url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        bytes:
+          type:
+          - integer
+          - 'null'
+        page_count:
+          type:
+          - integer
+          - 'null'
+        units:
+          type: number
+          example: 1
+        region:
+          $ref: '#/components/schemas/Region'
+        environment:
+          type: string
+          enum:
+          - live
+          - test
+        template:
+          type:
+          - object
+          - 'null'
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            version:
+              type: integer
+            channel:
+              type:
+              - string
+              - 'null'
+              description: The release channel the version came from (`published` by default); null when the request named a version number or `latest`.
+            canary:
+              type: boolean
+              description: True when the channel's canary share picked this version.
+        engine_version:
+          type: string
+          description: Chromium build and engine package version, for reproducibility.
+          example: chromium-140.0.7339.16/engine-1.4.0
+        template_checksum:
+          type:
+          - string
+          - 'null'
+        output_sha256:
+          type:
+          - string
+          - 'null'
+        deduplicated:
+          type: boolean
+        storage:
+          allOf:
+          - $ref: '#/components/schemas/StorageDelivery'
+        timings:
+          type: object
+          properties:
+            queue_ms:
+              type: integer
+            compile_ms:
+              type: integer
+            render_ms:
+              type: integer
+            upload_ms:
+              type: integer
+            total_ms:
+              type: integer
+        error:
+          allOf:
+          - $ref: '#/components/schemas/Problem'
+        meta:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    Engine:
+      type: string
+      enum:
+      - jinja2
+      - liquid
+      - handlebars
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://docs.formfeed.dev/errors/template-syntax
+        title:
+          type: string
+          example: Template syntax error
+        status:
+          type: integer
+          example: 422
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+          - template_not_found
+          - template_syntax_error
+          - template_runtime_error
+          - data_validation_error
+          - navigation_failed
+          - render_timeout
+          - page_limit_exceeded
+          - output_too_large
+          - file_too_large
+          - source_not_found
+          - source_invalid
+          - source_encrypted
+          - tool_failed
+          - file_type_unsupported
+          - office_document_invalid
+          - office_document_too_large
+          - office_conversion_failed
+          - office_unavailable
+          - unsupported_in_office
+          - test_output_unavailable
+          - quota_exceeded
+          - rate_limited
+          - region_unavailable
+          - worker_exhausted
+          - invalid_request
+          - unauthorized
+          - forbidden
+          - not_found
+          - conflict
+          - not_implemented
+          - schema_breaking_change
+          - channel_not_found
+          - channel_name_invalid
+          - channel_in_use
+          - render_input_expired
+          - listen_session_limit
+          - listen_session_ended
+          - last_workspace
+          - storage_not_configured
+          - storage_test_failed
+        location:
+          type:
+          - object
+          - 'null'
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+            file:
+              type: string
+              enum:
+              - template
+              - css
+              - head
+              - header
+              - footer
+            part:
+              type: string
+              example: word/document.xml
+              description: 'Office templates: the part of the file (document, header, footer, slide).'
+            paragraph:
+              type: integer
+              description: 'Office templates: the paragraph within the part, from 1.'
+        request_id:
+          type: string
+        errors:
+          type: array
+          description: '`data_validation_error` only: every place where the data does not match the schema.'
+          items:
+            type: object
+            properties:
+              path:
+                type:
+                - string
+                - 'null'
+                example: data.invoice.number
+              message:
+                type: string
+                example: 'data.invoice.number: must be string'
+        index:
+          type: integer
+          description: 'Batch requests only: the first item that failed.'
+    Region:
+      type: string
+      enum:
+      - eu
+      - us
+      - apac
     RenderRequest:
       type: object
       properties:
@@ -737,195 +1062,6 @@ components:
         created_at:
           type: string
           format: date-time
-    StorageError:
-      type: object
-      description: 'The provider''s answer, reduced: its code, the HTTP status and the first line of its message.'
-      properties:
-        code:
-          type: string
-          example: AccessDenied
-        http_status:
-          type:
-          - integer
-          - 'null'
-          example: 403
-        message:
-          type: string
-          example: Access Denied
-    StorageOption:
-      description: 'The copy for the workspace''s own bucket (bring your own storage). Left out, every output is
-
-        copied under the connection''s key template. `false` leaves this document out. `key` names its
-
-        object below the connection''s prefix instead of the key template: relative, without `.` or `..`
-
-        segments, at most 1024 bytes; an existing object is overwritten. A render with its own key is
-
-        never answered from the dedup cache, and one without a connection answers 409
-
-        `storage_not_configured`. In a batch, each item carries its own.
-
-        '
-      oneOf:
-      - type: boolean
-        enum:
-        - false
-      - type: object
-        additionalProperties: false
-        properties:
-          key:
-            type: string
-            maxLength: 1024
-            example: invoices/2026/RE-1001.pdf
-    Problem:
-      type: object
-      required:
-      - type
-      - title
-      - status
-      properties:
-        type:
-          type: string
-          format: uri
-          example: https://docs.formfeed.dev/errors/template-syntax
-        title:
-          type: string
-          example: Template syntax error
-        status:
-          type: integer
-          example: 422
-        detail:
-          type: string
-        code:
-          type: string
-          enum:
-          - template_not_found
-          - template_syntax_error
-          - template_runtime_error
-          - data_validation_error
-          - navigation_failed
-          - render_timeout
-          - page_limit_exceeded
-          - output_too_large
-          - file_too_large
-          - source_not_found
-          - source_invalid
-          - source_encrypted
-          - tool_failed
-          - file_type_unsupported
-          - office_document_invalid
-          - office_document_too_large
-          - office_conversion_failed
-          - office_unavailable
-          - unsupported_in_office
-          - test_output_unavailable
-          - quota_exceeded
-          - rate_limited
-          - region_unavailable
-          - worker_exhausted
-          - invalid_request
-          - unauthorized
-          - forbidden
-          - not_found
-          - conflict
-          - not_implemented
-          - schema_breaking_change
-          - channel_not_found
-          - channel_name_invalid
-          - channel_in_use
-          - render_input_expired
-          - listen_session_limit
-          - listen_session_ended
-          - last_workspace
-          - storage_not_configured
-          - storage_test_failed
-        location:
-          type:
-          - object
-          - 'null'
-          properties:
-            line:
-              type: integer
-            column:
-              type: integer
-            file:
-              type: string
-              enum:
-              - template
-              - css
-              - head
-              - header
-              - footer
-            part:
-              type: string
-              example: word/document.xml
-              description: 'Office templates: the part of the file (document, header, footer, slide).'
-            paragraph:
-              type: integer
-              description: 'Office templates: the paragraph within the part, from 1.'
-        request_id:
-          type: string
-        errors:
-          type: array
-          description: '`data_validation_error` only: every place where the data does not match the schema.'
-          items:
-            type: object
-            properties:
-              path:
-                type:
-                - string
-                - 'null'
-                example: data.invoice.number
-              message:
-                type: string
-                example: 'data.invoice.number: must be string'
-        index:
-          type: integer
-          description: 'Batch requests only: the first item that failed.'
-    Job:
-      type: object
-      properties:
-        id:
-          type: string
-          example: job_01J8ZK4M3Q
-        status:
-          type: string
-          enum:
-          - queued
-          - processing
-          - completed
-          - partially_failed
-          - failed
-        total:
-          type: integer
-        succeeded:
-          type: integer
-        failed:
-          type: integer
-        zip_url:
-          type:
-          - string
-          - 'null'
-          format: uri
-        storage:
-          allOf:
-          - $ref: '#/components/schemas/StorageDelivery'
-          description: The zip's copy in the workspace's own bucket; each item carries its own.
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Render'
-        meta:
-          type: object
-          additionalProperties: true
-        created_at:
-          type: string
-          format: date-time
-        completed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
     StorageDelivery:
       type: object
       description: 'The output''s copy in the workspace''s own bucket; null when none applies (no connection, a
@@ -972,145 +1108,9 @@ components:
         error:
           allOf:
           - $ref: '#/components/schemas/StorageError'
-    OutputFormat:
-      type: string
-      enum:
-      - pdf
-      - png
-      - jpg
-      - webp
-      - docx
-      - pptx
-      description: PDF and image templates, ad-hoc HTML and URLs produce `pdf`, `png`, `jpg` or `webp`; a `docx` template produces `docx` or `pdf`, a `pptx` template `pptx` or `pdf`.
-    Engine:
-      type: string
-      enum:
-      - jinja2
-      - liquid
-      - handlebars
-    RenderStatus:
-      type: string
-      enum:
-      - queued
-      - rendering
-      - succeeded
-      - failed
-    Render:
-      type: object
-      required:
-      - id
-      - status
-      - output
-      - region
-      - created_at
-      properties:
-        id:
-          type: string
-          example: rnd_01J8ZK4M3Q7X
-        status:
-          $ref: '#/components/schemas/RenderStatus'
-        output:
-          $ref: '#/components/schemas/OutputFormat'
-        download_url:
-          type:
-          - string
-          - 'null'
-          format: uri
-        expires_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        bytes:
-          type:
-          - integer
-          - 'null'
-        page_count:
-          type:
-          - integer
-          - 'null'
-        units:
-          type: number
-          example: 1
-        region:
-          $ref: '#/components/schemas/Region'
-        environment:
-          type: string
-          enum:
-          - live
-          - test
-        template:
-          type:
-          - object
-          - 'null'
-          properties:
-            id:
-              type: string
-            slug:
-              type: string
-            version:
-              type: integer
-            channel:
-              type:
-              - string
-              - 'null'
-              description: The release channel the version came from (`published` by default); null when the request named a version number or `latest`.
-            canary:
-              type: boolean
-              description: True when the channel's canary share picked this version.
-        engine_version:
-          type: string
-          description: Chromium build and engine package version, for reproducibility.
-          example: chromium-140.0.7339.16/engine-1.4.0
-        template_checksum:
-          type:
-          - string
-          - 'null'
-        output_sha256:
-          type:
-          - string
-          - 'null'
-        deduplicated:
-          type: boolean
-        storage:
-          allOf:
-          - $ref: '#/components/schemas/StorageDelivery'
-        timings:
-          type: object
-          properties:
-            queue_ms:
-              type: integer
-            compile_ms:
-              type: integer
-            render_ms:
-              type: integer
-            upload_ms:
-              type: integer
-            total_ms:
-              type: integer
-        error:
-          allOf:
-          - $ref: '#/components/schemas/Problem'
-        meta:
-          type: object
-          additionalProperties: true
-        created_at:
-          type: string
-          format: date-time
-        completed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-    Region:
-      type: string
-      enum:
-      - eu
-      - us
-      - apac
   responses:
-    Unprocessable:
-      description: Validation, template or data error. Template errors include `location`.
+    QuotaExceeded:
+      description: Monthly units exhausted and no overage available.
       content:
         application/problem+json:
           schema:
@@ -1121,14 +1121,14 @@ components:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-    NotFound:
-      description: Not found.
+    Unprocessable:
+      description: Validation, template or data error. Template errors include `location`.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-    QuotaExceeded:
-      description: Monthly units exhausted and no overage available.
+    NotFound:
+      description: Not found.
       content:
         application/problem+json:
           schema:
@@ -1160,14 +1160,6 @@ components:
       schema:
         type: string
         example: rnd_01J8ZK4M3Q7X
-    IdempotencyKey:
-      name: Idempotency-Key
-      in: header
-      required: false
-      description: Unique key per logical request; replays within 24 h return the original response.
-      schema:
-        type: string
-        maxLength: 128
     Limit:
       name: limit
       in: query
@@ -1181,6 +1173,14 @@ components:
       in: query
       schema:
         type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Unique key per logical request; replays within 24 h return the original response.
+      schema:
+        type: string
+        maxLength: 128
   securitySchemes:
     bearerAuth:
       type: http

@@ -144,6 +144,32 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
 components:
+  responses:
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    CompatResponse:
+      description: apitemplate.io shaped response.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              download_url:
+                type: string
+                format: uri
+              download_url_png:
+                type: string
+                format: uri
+                description: create-image only.
+              transaction_ref:
+                type: string
   schemas:
     Problem:
       type: object
@@ -250,32 +276,6 @@ components:
         index:
           type: integer
           description: 'Batch requests only: the first item that failed.'
-  responses:
-    CompatResponse:
-      description: apitemplate.io shaped response.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                example: success
-              download_url:
-                type: string
-                format: uri
-              download_url_png:
-                type: string
-                format: uri
-                description: create-image only.
-              transaction_ref:
-                type: string
-    Problem:
-      description: Error (RFC 9457 problem details).
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
   securitySchemes:
     bearerAuth:
       type: http
