@@ -13,7 +13,16 @@ x-tier-reason: enrichment pass 2026-09-28 (modular-v1; was harvest)
 specificationVersion: '0.20'
 created: '2026-09-28'
 modified: '2026-09-28'
+x-docs-platform: docusaurus
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-10-03
 tags:
+- PDF
+- Image Generation
+- Templates
+- Developer Tools
+- Software-as-a-Service
+tags_raw:
 - PDF
 - ImageGeneration
 - Templates
@@ -26,6 +35,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/formfeed-capability-edges.yml
+  name: Formfeed Business Capability Map
 - type: AgenticAccess
   url: agentic-access/formfeed-agentic-access.yml
 - type: RateLimits
@@ -140,6 +152,8 @@ apis:
   humanURL: https://docs.formfeed.dev/api/overview
   baseURL: https://api.formfeed.dev/v1
   tags:
+  - Brands
+  tags_raw:
   - Brand
   properties:
   - type: OpenAPI
@@ -184,6 +198,8 @@ apis:
   humanURL: https://docs.formfeed.dev/api/overview
   baseURL: https://api.formfeed.dev/v1
   tags:
+  - File
+  tags_raw:
   - Files
   properties:
   - type: OpenAPI
@@ -295,6 +311,8 @@ apis:
   humanURL: https://docs.formfeed.dev/api/overview
   baseURL: https://api.formfeed.dev/v1
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
