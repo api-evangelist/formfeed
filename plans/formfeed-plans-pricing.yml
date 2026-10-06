@@ -4,22 +4,32 @@ generator: extract-docs-artifacts.py (local)
 source: https://formfeed.dev/pricing
 sources:
 - https://formfeed.dev/pricing
+- https://formfeed.dev/apis.json
 - https://docs.formfeed.dev/api/limits-and-usage
 name: Formfeed pricing
 audience: business-product
-pricing_basis: per-seat
+pricing_basis: tiered-subscription
+pricing_basis_note: 'Flat price per month or per year with render units included; not priced per seat (provider apis.json, 2026-10-05). One unit is a PDF of up to 5 pages, or one image or Word/PowerPoint file.'
+currency: EUR
 plans:
 - name: Free
   price_text: Free
+  units_per_month: 100
 - name: Starter
   price_text: 19 € per month or 180 € per year
   price: 19
+  units_per_month: 3000
+  overage_per_1000_units: 7
 - name: Pro
   price_text: 59 € per month or 588 € per year
   price: 59
+  units_per_month: 15000
+  overage_per_1000_units: 5
 - name: Business
   price_text: 179 € per month or 1,788 € per year
   price: 179
+  units_per_month: 60000
+  overage_per_1000_units: 4
 - name: Enterprise
   price_text: Custom
 docs: https://formfeed.dev/pricing

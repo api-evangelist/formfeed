@@ -1,11 +1,42 @@
-{
-  "generated": "2026-09-28",
-  "method": "derived",
-  "source": "none",
-  "deployment": {
-    "mode": "none",
-    
-    "auth": "none",
-    "verified": "derived"
-  }
-}
+generated: '2026-10-06'
+method: probed
+source:
+- url: https://formfeed.dev/apis.json
+  status: 200
+  content_type: application/json
+- url: https://mcp.formfeed.dev/mcp
+  status: 401
+  www_authenticate: Bearer realm="formfeed"
+- url: https://mcp.formfeed.dev/.well-known/oauth-protected-resource
+  status: 200
+  content_type: application/json
+- url: https://registry.npmjs.org/@formfeed/mcp/latest
+  status: 200
+  content_type: application/json
+status: gated
+server:
+  name: io.github.formfeed-dev/formfeed
+  transport: streamable-http
+  url: https://mcp.formfeed.dev/mcp
+  docs: https://docs.formfeed.dev/integrations/mcp
+deployment:
+  mode: both
+  endpoint: https://mcp.formfeed.dev/mcp
+  install: npx -y @formfeed/mcp
+  package: https://www.npmjs.com/package/@formfeed/mcp
+  auth: api-key
+  verified: probed
+  probe: gated
+  checked: '2026-10-06'
+  source: provider's own apis.json (https://formfeed.dev/apis.json, MCPServer properties), then probed
+auth:
+  remote: API key as bearer token on https://mcp.formfeed.dev/mcp; https://mcp.formfeed.dev/mcp/{workspace_id} takes an OAuth sign-in
+    (RFC 9728 protected resource metadata at https://mcp.formfeed.dev/.well-known/oauth-protected-resource)
+  local: FORMFEED_API_KEY environment variable
+local_package:
+  name: '@formfeed/mcp'
+  version: 0.3.13
+  mcpName: io.github.formfeed-dev/formfeed
+repository: https://github.com/formfeed-dev/formfeed
+tools_note: No tool list captured. The endpoint answers 401 with a Bearer challenge to an anonymous request; tools/list needs a key.
+  Do NOT derive a tool list from the OpenAPI and store it here.

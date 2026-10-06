@@ -12,7 +12,7 @@ x-tier: profiled
 x-tier-reason: enrichment pass 2026-09-28 (modular-v1; was harvest)
 specificationVersion: '0.20'
 created: '2026-09-28'
-modified: '2026-09-28'
+modified: '2026-10-06'
 x-docs-platform: docusaurus
 x-docs-platform-confidence: medium
 x-docs-platform-checked: 2026-10-03
@@ -122,6 +122,32 @@ common:
   url: https://formfeed.dev/pricing
 - type: Login
   url: https://app.formfeed.dev/en/sign-in
+- type: APIsJSON
+  url: https://formfeed.dev/apis.json
+- type: APIsJSON
+  url: https://formfeed.dev/.well-known/apis.json
+- type: MCPServer
+  url: mcp/formfeed-mcp.yml
+  name: Formfeed MCP server (hosted https://mcp.formfeed.dev/mcp + local @formfeed/mcp)
+- type: GitHubOrganization
+  url: https://github.com/formfeed-dev
+- type: GitHubRepository
+  url: https://github.com/formfeed-dev/formfeed
+  name: SDKs, CLI, template engine and MCP server (MIT)
+- type: GitHubRepository
+  url: https://github.com/formfeed-dev/templates
+  name: Example templates (MIT)
+- type: BlogRSS
+  url: https://formfeed.dev/rss.xml
+- type: LLMsTxt
+  url: https://docs.formfeed.dev/llms-full.txt
+  name: The documentation as one plain-text file
+- type: DataProcessingAgreement
+  url: https://formfeed.dev/legal/dpa
+- type: Subprocessors
+  url: https://formfeed.dev/legal/subprocessors
+- type: DataResidency
+  url: https://docs.formfeed.dev/api/data-residency
 apis:
 - aid: formfeed:formfeed-account-api
   name: Formfeed Account API
@@ -333,6 +359,20 @@ x-submission-notes: PDF and image generation API (templates + JSON in, documents
   Root and docs return 403 to plain fetchers (bot protection), llms.txt 200 -- use the browser strategy (fetch-url.py).
 x-submission-probe: '2026-09-28: root 403 + invented 403 (bot-blocking), llms.txt 200'
 x-submitted-by: it@staudt-it-dienstleistungen.de (apis.io/add, 2026-09-27)
+x-correction-request:
+  requested: '2026-10-06'
+  source:
+  - _messages/2026-10/2026-10-05-apisio-3193-re-your-apisio-submission-formfeed-is-live.md
+  request: 'Philipp Staudt (it@staudt-it-dienstleistungen.de), 2026-10-05: Formfeed now publishes an APIs.json at https://formfeed.dev/apis.json
+    (also /.well-known/apis.json) with the OpenAPI address, SDKs, CLI, MCP server, GitHub organisation, plans and rate limits as data; read it.'
+  applied: '2026-10-06'
+  applied_note: 'Verified live 2026-10-06: both apis.json URLs 200 application/json (identical, specificationVersion 0.23); every URL in it
+    answers 200 except mcp.formfeed.dev/mcp (401 Bearer challenge, expected) and npmjs.com pages (403 bot wall; registry.npmjs.org confirms
+    @formfeed/sdk, @formfeed/mcp and formfeed at 0.3.13, @formfeed/mcp mcpName io.github.formfeed-dev/formfeed). Added APIsJSON (x2), MCPServer,
+    GitHubOrganization, GitHubRepository (x2), BlogRSS, docs llms-full.txt, DataProcessingAgreement, Subprocessors, DataResidency pointers.
+    mcp/formfeed-mcp.yml rewritten from ''none'' to the real hosted + local server (protected-resource metadata 200). rate-limits corrected
+    to 1/5/15/40 rps per plan (was 5 for every plan); plans corrected to tiered-subscription (was per-seat) with units/month and overage per
+    1,000 units. OpenAPI at https://api.formfeed.dev/v1/openapi.json matches openapi/_original (3.0.3, v1.0.0, 61 operations) - no change.'
 x-enrichment:
   date: '2026-09-28'
   status: enriched
