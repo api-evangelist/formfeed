@@ -640,48 +640,48 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
 components:
-  responses:
-    Unprocessable:
-      description: Validation, template or data error. Template errors include `location`.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    NotFound:
-      description: Not found.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    Problem:
-      description: Error (RFC 9457 problem details).
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-  parameters:
-    Limit:
-      name: limit
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 50
-    Cursor:
-      name: cursor
-      in: query
-      schema:
-        type: string
-    TemplateId:
-      name: id
-      in: path
-      required: true
-      description: Template id (`tpl_…`) or slug.
-      schema:
-        type: string
-        example: invoice-de
   schemas:
+    Engine:
+      type: string
+      enum:
+      - jinja2
+      - liquid
+      - handlebars
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          example: tpl_01J8ZK4M3Q
+        slug:
+          type: string
+          example: invoice-de
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        kind:
+          $ref: '#/components/schemas/TemplateKind'
+        engine:
+          $ref: '#/components/schemas/Engine'
+        tags:
+          type: array
+          items:
+            type: string
+        published_version:
+          type:
+          - integer
+          - 'null'
+        latest_version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     TemplateVersion:
       type: object
       properties:
@@ -752,47 +752,6 @@ components:
           format: date-time
         schema_check:
           $ref: '#/components/schemas/SchemaCheck'
-    Engine:
-      type: string
-      enum:
-      - jinja2
-      - liquid
-      - handlebars
-    Template:
-      type: object
-      properties:
-        id:
-          type: string
-          example: tpl_01J8ZK4M3Q
-        slug:
-          type: string
-          example: invoice-de
-        name:
-          type: string
-        description:
-          type:
-          - string
-          - 'null'
-        kind:
-          $ref: '#/components/schemas/TemplateKind'
-        engine:
-          $ref: '#/components/schemas/Engine'
-        tags:
-          type: array
-          items:
-            type: string
-        published_version:
-          type:
-          - integer
-          - 'null'
-        latest_version:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     Channel:
       type: object
       required:
@@ -844,6 +803,275 @@ components:
                 type: integer
         schema_check:
           $ref: '#/components/schemas/SchemaCheck'
+    Settings:
+      type: object
+      description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
+      additionalProperties: true
+      properties:
+        paper:
+          type: object
+          properties:
+            format:
+              type: string
+              example: A4
+            width:
+              type:
+              - string
+              - 'null'
+            height:
+              type:
+              - string
+              - 'null'
+            landscape:
+              type: boolean
+              default: false
+        margin:
+          type: object
+          properties:
+            top:
+              type: string
+              example: 20mm
+            right:
+              type: string
+              example: 15mm
+            bottom:
+              type: string
+              example: 20mm
+            left:
+              type: string
+              example: 15mm
+        header:
+          type: object
+          description: Printed across the whole page width inside the top margin.
+          properties:
+            html:
+              type: string
+            height:
+              type: string
+            padding:
+              type: string
+              description: CSS padding inside the header box; `0` for designs that run edge to edge.
+              default: 0 10mm
+        footer:
+          type: object
+          description: Printed across the whole page width inside the bottom margin.
+          properties:
+            html:
+              type: string
+            height:
+              type: string
+            padding:
+              type: string
+              description: CSS padding inside the footer box; `0` for designs that run edge to edge.
+              default: 0 10mm
+        printBackground:
+          type: boolean
+          default: true
+        scale:
+          type: number
+          default: 1
+        image:
+          type: object
+          properties:
+            width:
+              type: integer
+              example: 1200
+            height:
+              type: integer
+              example: 630
+            deviceScaleFactor:
+              type: number
+              default: 2
+            format:
+              type: string
+              enum:
+              - png
+              - jpeg
+              - webp
+              description: Output of an image template when the request names no `output`. `jpg` is accepted as well.
+            quality:
+              type: integer
+              minimum: 1
+              maximum: 100
+            fullPage:
+              type: boolean
+              default: false
+            transparent:
+              type: boolean
+              default: false
+        office:
+          type: object
+          description: Word and PowerPoint templates. Page setup, margins, headers and footers come from the document; the Chromium settings above do not apply.
+          properties:
+            output:
+              type: string
+              enum:
+              - docx
+              - pptx
+              - pdf
+              description: Output when the request names none; the template's own format without it.
+        locale:
+          type: string
+          example: de-DE
+        timezone:
+          type: string
+          example: Europe/Berlin
+        currency:
+          type: string
+          example: EUR
+    SchemaChange:
+      type: object
+      required:
+      - path
+      - pointer
+      - kind
+      - breaking
+      - message
+      properties:
+        path:
+          type: string
+          example: customer.email
+          description: Dotted field path; `items[]` for array elements, empty for the data itself.
+        pointer:
+          type: string
+          example: /properties/customer/properties/email
+        kind:
+          type: string
+          enum:
+          - field-added-required
+          - field-added-optional
+          - field-removed
+          - field-became-required
+          - field-became-optional
+          - type-narrowed
+          - type-widened
+          - enum-values-removed
+          - enum-values-added
+          - enum-added
+          - enum-removed
+          - const-changed
+          - constraint-tightened
+          - constraint-relaxed
+          - additional-properties-closed
+          - additional-properties-opened
+          - keyword-changed
+        breaking:
+          type: boolean
+        message:
+          type: string
+          example: '"customer.email" is now required'
+    TemplateCreate:
+      type: object
+      required:
+      - name
+      - slug
+      - kind
+      - engine
+      description: '`html` is required for `pdf` and `image` templates.'
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+          pattern: ^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$
+        description:
+          type: string
+        kind:
+          $ref: '#/components/schemas/TemplateKind'
+        engine:
+          $ref: '#/components/schemas/Engine'
+        html:
+          type: string
+        css:
+          type: string
+        head:
+          type: string
+        settings:
+          $ref: '#/components/schemas/Settings'
+        sample_data:
+          type: object
+          additionalProperties: true
+        data_schema:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        i18n:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        partials:
+          type: object
+          additionalProperties:
+            type: string
+          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
+        tags:
+          type: array
+          items:
+            type: string
+        publish:
+          type: boolean
+          default: false
+    TemplateKind:
+      type: string
+      enum:
+      - pdf
+      - image
+      - docx
+      - pptx
+      description: '`docx` and `pptx` templates are Word and PowerPoint files with tags in their text (Starter plan and above).'
+    SchemaCheck:
+      type: object
+      description: 'The data schema of the version going live compared with the one callers use now. `stored`: both versions store a schema, and breaking changes refuse without `allow_breaking`. `inferred`: at least one has none, so schemas inferred from sample data were compared and the result is only a warning. `none`: nothing to compare.'
+      required:
+      - source
+      - breaking
+      - safe
+      properties:
+        source:
+          type: string
+          enum:
+          - stored
+          - inferred
+          - none
+        breaking:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaChange'
+        safe:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemaChange'
+    Diagnostic:
+      type: object
+      properties:
+        severity:
+          type: string
+          enum:
+          - error
+          - warning
+          - info
+        message:
+          type: string
+        code:
+          type: string
+        location:
+          type: object
+          properties:
+            line:
+              type: integer
+            column:
+              type: integer
+        path:
+          type: string
+          description: 'Data errors only: where in the data, e.g. `data.invoice.lines[0].qty`.'
+        part:
+          type: string
+          description: 'Word and PowerPoint templates only: the file part the tag is in, e.g. `word/document.xml` or `ppt/slides/slide2.xml`.'
+        paragraph:
+          type: integer
+          description: 'Word and PowerPoint templates only: the 1-based paragraph in `part`, as the template page lists it.'
     TemplateVersionCreate:
       type: object
       description: '`html` is required for `pdf` and `image` templates.'
@@ -995,275 +1223,47 @@ components:
         index:
           type: integer
           description: 'Batch requests only: the first item that failed.'
-    TemplateCreate:
-      type: object
-      required:
-      - name
-      - slug
-      - kind
-      - engine
-      description: '`html` is required for `pdf` and `image` templates.'
-      properties:
-        name:
-          type: string
-        slug:
-          type: string
-          pattern: ^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])?$
-        description:
-          type: string
-        kind:
-          $ref: '#/components/schemas/TemplateKind'
-        engine:
-          $ref: '#/components/schemas/Engine'
-        html:
-          type: string
-        css:
-          type: string
-        head:
-          type: string
-        settings:
-          $ref: '#/components/schemas/Settings'
-        sample_data:
-          type: object
-          additionalProperties: true
-        data_schema:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        i18n:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        partials:
-          type: object
-          additionalProperties:
-            type: string
-          description: Partials the template includes (`name` → source), as `formfeed templates push` collects them from the project's partials folder.
-        tags:
-          type: array
-          items:
-            type: string
-        publish:
-          type: boolean
-          default: false
-    TemplateKind:
-      type: string
-      enum:
-      - pdf
-      - image
-      - docx
-      - pptx
-      description: '`docx` and `pptx` templates are Word and PowerPoint files with tags in their text (Starter plan and above).'
-    SchemaCheck:
-      type: object
-      description: 'The data schema of the version going live compared with the one callers use now. `stored`: both versions store a schema, and breaking changes refuse without `allow_breaking`. `inferred`: at least one has none, so schemas inferred from sample data were compared and the result is only a warning. `none`: nothing to compare.'
-      required:
-      - source
-      - breaking
-      - safe
-      properties:
-        source:
-          type: string
-          enum:
-          - stored
-          - inferred
-          - none
-        breaking:
-          type: array
-          items:
-            $ref: '#/components/schemas/SchemaChange'
-        safe:
-          type: array
-          items:
-            $ref: '#/components/schemas/SchemaChange'
-    Diagnostic:
-      type: object
-      properties:
-        severity:
-          type: string
-          enum:
-          - error
-          - warning
-          - info
-        message:
-          type: string
-        code:
-          type: string
-        location:
-          type: object
-          properties:
-            line:
-              type: integer
-            column:
-              type: integer
-        path:
-          type: string
-          description: 'Data errors only: where in the data, e.g. `data.invoice.lines[0].qty`.'
-        part:
-          type: string
-          description: 'Word and PowerPoint templates only: the file part the tag is in, e.g. `word/document.xml` or `ppt/slides/slide2.xml`.'
-        paragraph:
-          type: integer
-          description: 'Word and PowerPoint templates only: the 1-based paragraph in `part`, as the template page lists it.'
-    SchemaChange:
-      type: object
-      required:
-      - path
-      - pointer
-      - kind
-      - breaking
-      - message
-      properties:
-        path:
-          type: string
-          example: customer.email
-          description: Dotted field path; `items[]` for array elements, empty for the data itself.
-        pointer:
-          type: string
-          example: /properties/customer/properties/email
-        kind:
-          type: string
-          enum:
-          - field-added-required
-          - field-added-optional
-          - field-removed
-          - field-became-required
-          - field-became-optional
-          - type-narrowed
-          - type-widened
-          - enum-values-removed
-          - enum-values-added
-          - enum-added
-          - enum-removed
-          - const-changed
-          - constraint-tightened
-          - constraint-relaxed
-          - additional-properties-closed
-          - additional-properties-opened
-          - keyword-changed
-        breaking:
-          type: boolean
-        message:
-          type: string
-          example: '"customer.email" is now required'
-    Settings:
-      type: object
-      description: Rendering settings. Deep-merged over the template's settings. See the settings reference.
-      additionalProperties: true
-      properties:
-        paper:
-          type: object
-          properties:
-            format:
-              type: string
-              example: A4
-            width:
-              type:
-              - string
-              - 'null'
-            height:
-              type:
-              - string
-              - 'null'
-            landscape:
-              type: boolean
-              default: false
-        margin:
-          type: object
-          properties:
-            top:
-              type: string
-              example: 20mm
-            right:
-              type: string
-              example: 15mm
-            bottom:
-              type: string
-              example: 20mm
-            left:
-              type: string
-              example: 15mm
-        header:
-          type: object
-          description: Printed across the whole page width inside the top margin.
-          properties:
-            html:
-              type: string
-            height:
-              type: string
-            padding:
-              type: string
-              description: CSS padding inside the header box; `0` for designs that run edge to edge.
-              default: 0 10mm
-        footer:
-          type: object
-          description: Printed across the whole page width inside the bottom margin.
-          properties:
-            html:
-              type: string
-            height:
-              type: string
-            padding:
-              type: string
-              description: CSS padding inside the footer box; `0` for designs that run edge to edge.
-              default: 0 10mm
-        printBackground:
-          type: boolean
-          default: true
-        scale:
-          type: number
-          default: 1
-        image:
-          type: object
-          properties:
-            width:
-              type: integer
-              example: 1200
-            height:
-              type: integer
-              example: 630
-            deviceScaleFactor:
-              type: number
-              default: 2
-            format:
-              type: string
-              enum:
-              - png
-              - jpeg
-              - webp
-              description: Output of an image template when the request names no `output`. `jpg` is accepted as well.
-            quality:
-              type: integer
-              minimum: 1
-              maximum: 100
-            fullPage:
-              type: boolean
-              default: false
-            transparent:
-              type: boolean
-              default: false
-        office:
-          type: object
-          description: Word and PowerPoint templates. Page setup, margins, headers and footers come from the document; the Chromium settings above do not apply.
-          properties:
-            output:
-              type: string
-              enum:
-              - docx
-              - pptx
-              - pdf
-              description: Output when the request names none; the template's own format without it.
-        locale:
-          type: string
-          example: de-DE
-        timezone:
-          type: string
-          example: Europe/Berlin
-        currency:
-          type: string
-          example: EUR
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    TemplateId:
+      name: id
+      in: path
+      required: true
+      description: Template id (`tpl_…`) or slug.
+      schema:
+        type: string
+        example: invoice-de
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+  responses:
+    Unprocessable:
+      description: Validation, template or data error. Template errors include `location`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
   securitySchemes:
     bearerAuth:
       type: http

@@ -145,12 +145,6 @@ paths:
           $ref: '#/components/responses/Problem'
 components:
   responses:
-    Problem:
-      description: Error (RFC 9457 problem details).
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
     CompatResponse:
       description: apitemplate.io shaped response.
       content:
@@ -170,6 +164,12 @@ components:
                 description: create-image only.
               transaction_ref:
                 type: string
+    Problem:
+      description: Error (RFC 9457 problem details).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
   schemas:
     Problem:
       type: object

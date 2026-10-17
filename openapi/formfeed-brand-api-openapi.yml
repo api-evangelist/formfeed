@@ -49,6 +49,109 @@ paths:
           $ref: '#/components/responses/Problem'
 components:
   schemas:
+    Brand:
+      type: object
+      required:
+      - version
+      - name
+      - colors
+      - fonts
+      - font_size
+      - logo
+      - legal_footer
+      - page_defaults
+      properties:
+        version:
+          type: integer
+          example: 7
+          description: Grows with every change of the kit; renders record the version they used.
+        name:
+          type:
+          - string
+          - 'null'
+          example: Fennlor Studio GmbH
+        colors:
+          type: object
+          additionalProperties:
+            type: string
+            example: '#0f766e'
+          description: Token → hex colour, e.g. `primary`, `accent`. Always an object.
+          example:
+            primary: '#0f766e'
+            accent: '#f59e0b'
+        fonts:
+          type: object
+          properties:
+            heading:
+              type:
+              - string
+              - 'null'
+              example: Inter
+            body:
+              type:
+              - string
+              - 'null'
+              example: Source Serif 4
+        font_size:
+          type:
+          - string
+          - 'null'
+          example: 10pt
+        logo:
+          type: object
+          description: CDN URLs of the logos, served without a signature; a new logo gets a new URL.
+          properties:
+            primary:
+              type:
+              - string
+              - 'null'
+              format: uri
+            inverse:
+              type:
+              - string
+              - 'null'
+              format: uri
+            mark:
+              type:
+              - string
+              - 'null'
+              format: uri
+        legal_footer:
+          type:
+          - string
+          - 'null'
+        page_defaults:
+          type: object
+          description: Paper and margins new templates start from in the app; renders do not apply them. `{}` when unset.
+          properties:
+            paper:
+              type: object
+              properties:
+                format:
+                  type: string
+                  example: A4
+                landscape:
+                  type: boolean
+            margin:
+              type: object
+              properties:
+                top:
+                  type: string
+                  example: 20mm
+                right:
+                  type: string
+                  example: 15mm
+                bottom:
+                  type: string
+                  example: 20mm
+                left:
+                  type: string
+                  example: 15mm
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
     Problem:
       type: object
       required:
@@ -154,109 +257,6 @@ components:
         index:
           type: integer
           description: 'Batch requests only: the first item that failed.'
-    Brand:
-      type: object
-      required:
-      - version
-      - name
-      - colors
-      - fonts
-      - font_size
-      - logo
-      - legal_footer
-      - page_defaults
-      properties:
-        version:
-          type: integer
-          example: 7
-          description: Grows with every change of the kit; renders record the version they used.
-        name:
-          type:
-          - string
-          - 'null'
-          example: Fennlor Studio GmbH
-        colors:
-          type: object
-          additionalProperties:
-            type: string
-            example: '#0f766e'
-          description: Token → hex colour, e.g. `primary`, `accent`. Always an object.
-          example:
-            primary: '#0f766e'
-            accent: '#f59e0b'
-        fonts:
-          type: object
-          properties:
-            heading:
-              type:
-              - string
-              - 'null'
-              example: Inter
-            body:
-              type:
-              - string
-              - 'null'
-              example: Source Serif 4
-        font_size:
-          type:
-          - string
-          - 'null'
-          example: 10pt
-        logo:
-          type: object
-          description: CDN URLs of the logos, served without a signature; a new logo gets a new URL.
-          properties:
-            primary:
-              type:
-              - string
-              - 'null'
-              format: uri
-            inverse:
-              type:
-              - string
-              - 'null'
-              format: uri
-            mark:
-              type:
-              - string
-              - 'null'
-              format: uri
-        legal_footer:
-          type:
-          - string
-          - 'null'
-        page_defaults:
-          type: object
-          description: Paper and margins new templates start from in the app; renders do not apply them. `{}` when unset.
-          properties:
-            paper:
-              type: object
-              properties:
-                format:
-                  type: string
-                  example: A4
-                landscape:
-                  type: boolean
-            margin:
-              type: object
-              properties:
-                top:
-                  type: string
-                  example: 20mm
-                right:
-                  type: string
-                  example: 15mm
-                bottom:
-                  type: string
-                  example: 20mm
-                left:
-                  type: string
-                  example: 15mm
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
   responses:
     Problem:
       description: Error (RFC 9457 problem details).
