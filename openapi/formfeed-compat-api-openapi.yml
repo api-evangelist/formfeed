@@ -285,3 +285,9 @@ components:
 externalDocs:
   description: Guides, SDKs and the CLI
   url: https://docs.formfeed.dev
+x-provenance:
+  method: harvested
+  publisher: Formfeed
+  source: https://api.formfeed.dev/v1/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
