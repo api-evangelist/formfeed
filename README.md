@@ -64,5 +64,169 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Formfeed is a company surfaced via the API Evangelist harvest backlog (source: new-submission) and added to the network as a stub for full-pipeline profiling.
-- https://formfeed.dev/
+Formfeed offers a PDF and image generation API that lets developers render templates written in Jinja2, Liquid, or Handlebars into PDFs, PNGs, and other formats. It can also convert Word and PowerPoint files. The service runs in Frankfurt with EU‑only data residency and provides a free tier of 100 units per month. SDKs are available for TypeScript and Python, a CLI exists, and there is MCP integration for AI agents. Features include batch rendering, webhook notifications, versioned templates, and a visual editor for designing documents.
+
+**Areas:** PDF · Image Generation · Templates · Developer Tools · Software-as-a-Service
+
+## Formfeed on APIs.io
+
+Everything profiled for Formfeed is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/formfeed/](https://apis.io/providers/formfeed/)** — or go straight to one of the APIs or properties below.
+
+### APIs (9)
+
+- [Formfeed Account API](https://apis.io/apis/formfeed/formfeed-account-api/) — Workspace, plan and usage.
+- [Formfeed Brand API](https://apis.io/apis/formfeed/formfeed-brand-api/) — The organisation's brand kit: colours, fonts, logos and legal footer every template sees as `brand`.
+- [Formfeed Compat API](https://apis.io/apis/formfeed/formfeed-compat-api/) — Migration shim for apitemplate.io clients.
+- [Formfeed Files API](https://apis.io/apis/formfeed/formfeed-files-api/) — Workspace assets such as images and fonts.
+- [Formfeed Partials API](https://apis.io/apis/formfeed/formfeed-partials-api/) — Shared partials of the organisation, included by name from every template of the same engine.
+- [Formfeed PDF tools API](https://apis.io/apis/formfeed/formfeed-pdf-tools-api/) — Merge, protect, watermark and inspect PDFs.
+- [Formfeed Renders API](https://apis.io/apis/formfeed/formfeed-renders-api/) — Render PDFs and images from templates, HTML or URLs.
+- [Formfeed Templates API](https://apis.io/apis/formfeed/formfeed-templates-api/) — Manage templates and versions (templates as code).
+- [Formfeed Webhooks API](https://apis.io/apis/formfeed/formfeed-webhooks-api/) — Event delivery to your endpoints.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Formfeed Webhooks](https://apis.io/asyncapis/formfeed/formfeed-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [io.github.formfeed-dev/formfeed](https://apis.io/servers/formfeed/io-github-formfeed-dev-formfeed/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Formfeed Agentic Access](https://apis.io/agentic-access/formfeed/formfeed-agentic-access/)
+
+#### JSON Schema (6)
+
+The data models the API reads and writes.
+
+- [Brand](https://apis.io/schemas/formfeed/formfeed-brand/)
+- [Render](https://apis.io/schemas/formfeed/formfeed-render/)
+- [RenderRequest](https://apis.io/schemas/formfeed/formfeed-render-request/)
+- [StorageConnection](https://apis.io/schemas/formfeed/formfeed-storage-connection/)
+- [StorageConnectionPut](https://apis.io/schemas/formfeed/formfeed-storage-connection-put/)
+- [TemplateVersionCreate](https://apis.io/schemas/formfeed/formfeed-template-version-create/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Formfeed Context](https://apis.io/jsonld/formfeed/formfeed-context/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Formfeed Openapi Overlay](https://apis.io/overlays/formfeed/formfeed-openapi-overlay/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [Formfeed API Rules](https://apis.io/rules/formfeed/formfeed-rules/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Formfeed Authentication](https://apis.io/security/formfeed/formfeed-authentication/)
+- [Formfeed Domain Security](https://apis.io/security/formfeed/formfeed-domain-security/)
+- [Formfeed Trust Center](https://apis.io/security/formfeed/formfeed-trust-center/)
+- [Formfeed Vulnerability Disclosure](https://apis.io/security/formfeed/formfeed-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Formfeed Plans Pricing](https://apis.io/plans/formfeed/formfeed-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Formfeed Rate Limits](https://apis.io/rate-limits/formfeed/formfeed-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://formfeed.dev/)
+- [Documentation](https://docs.formfeed.dev/api/overview)
+- [Getting started](https://docs.formfeed.dev/getting-started/quickstart)
+- [API reference](https://docs.formfeed.dev/api/reference/formfeed)
+- [Pricing](https://formfeed.dev/pricing)
+- [Sign up](https://formfeed.dev/pricing)
+- [Support](https://formfeed.dev/support)
+- [Changelog](https://formfeed.dev/changelog)
+- [Blog](https://formfeed.dev/blog)
+- [Security](https://formfeed.dev/security)
+- [Compliance](https://formfeed.dev/security)
+- [Terms of service](https://formfeed.dev/legal/terms)
+- [Privacy policy](https://formfeed.dev/legal/privacy)
+- [GitHub](https://github.com/formfeed-dev)
+- [Status](https://status.formfeed.dev)
+
+## API Evangelist rating
+
+**Kin Score 76.8** — exemplar · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 71.1 |
+| Contract governance | 22.0 |
+| Operational transparency | 86.8 |
+| Developer ergonomics | 63.7 |
+| Access clarity | 92.1 |
+
+**Agent readiness 51.8** — agent-native
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | verified |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | verified |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | verified |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 43.1** — AI & Biometrics
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/formfeed/](https://apis.io/providers/formfeed/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Formfeed: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/formfeed/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
